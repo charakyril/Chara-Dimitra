@@ -118,7 +118,6 @@ class MovingObjects : public WorldObject
 {
     protected:
         int SPEED;
-        //I will make a struct Direction
         Direction DIRECTION;
         //Car or bicycle
         string object_type;
@@ -150,6 +149,7 @@ class CARS : public MovingObjects
         : MovingObjects(glyph, type, x, y, speed, direction, obj_type), car(car)
         {
             car.count++;
+            //Auto einai gia to onoma (px ID = CAR2)
             ID = object_type.append(to_string(car.count));
             cout << "I just made a moving object of type: " << object_type << endl;
         }
