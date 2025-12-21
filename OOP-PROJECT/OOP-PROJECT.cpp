@@ -57,7 +57,6 @@ class MovingObjects : public WorldObject
 {
     protected:
         int SPEED;
-        //I will make a struct Direction
         Direction DIRECTION;
         //Car or bicycle
         string object_type;
@@ -88,8 +87,8 @@ class CARS : public MovingObjects
          int speed, Direction direction, const string& obj_type, int counter)
         : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
         {
-            count++;
-            ID = object_type.append(to_string(count));
+            car.count++;
+            ID = object_type.append(to_string(car.count));
             cout << "I just made a moving object of type: " << object_type << endl;
         }
         //Destructor
