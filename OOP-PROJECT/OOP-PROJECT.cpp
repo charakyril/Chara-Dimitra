@@ -17,72 +17,11 @@ struct Direction
     float y;
 };
 
-//MAKE STRUCT POSITION
+//STRUCT POSITION for gps and coordinates
 struct Position
 {
     int x;
     int y;
-};
-
-//Struct for moving object car
-struct Cars 
-{
-    int count;
-};
-//struct for moving object bike
-struct Bikes
-{
-    int count;
-};
-//struct for static object stationary vehicle
-struct StatVehicle
-{
-    int count;
-};
-//struct for static object traffic signs
-struct TrafficSigns
-{
-    string ID_TEXT;
-    int count;
-};
-//struct for static object traffic lights
-struct TrafficLights
-{
-    string COLOUR;
-    int count;
-};
-//----STRUCTS FOR SENSORS----//
-//Lidar detector
-struct LidarDetector
-{
-    float distance;
-    string object_type_detect;
-    float sureness;
-};
-
-//Radar detector
-struct RadarDetector
-{
-    float distance;
-    float speed;
-    Direction movement_direction;
-    float sureness;
-};
-
-//Camera sensor
-struct CameraSensor
-{
-    string object_type_detect;
-    float distance;
-    //struct position
-    Position position;
-    string ObjectID;
-    float sureness;
-    float speed;
-    Direction movement_direction;
-    string SignText;
-    //GREEN, YELLOW, RED    
-    string LightColour;
 };
 
 //-------CLASSES-------//
@@ -142,21 +81,21 @@ class MovingObjects : public WorldObject
 class CARS : public MovingObjects
 {
     private:
-        Cars car;
+        int count;
     public:
         //Constructor
         CARS(const char& glyph, const string& type, float x, float y,
-         int speed, Direction direction, const string& obj_type, Cars car)
-        : MovingObjects(glyph, type, x, y, speed, direction, obj_type), car(car)
+         int speed, Direction direction, const string& obj_type, int counter)
+        : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
         {
-            car.count++;
-            ID = object_type.append(to_string(car.count));
+            count++;
+            ID = object_type.append(to_string(count));
             cout << "I just made a moving object of type: " << object_type << endl;
         }
         //Destructor
         ~CARS() override
         {
-            car.count--;
+            count--;
             cout << "I just destroyed a moving object of type: " << object_type << endl;
         }
         void describe() const override
@@ -169,20 +108,20 @@ class CARS : public MovingObjects
 class BIKES : public MovingObjects
 {
     private:
-        Bikes bike;
+        int count;
     public:
         //Constructor
-        BIKES(const char& glyph, const string& type, float x, float y, int speed, Direction direction, const string& obj_type, Bikes bike)
-        : MovingObjects(glyph, type, x, y, speed, direction, obj_type), bike(bike)
+        BIKES(const char& glyph, const string& type, float x, float y, int speed, Direction direction, const string& obj_type, int counter)
+        : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
         {
-            bike.count++;
-            ID = object_type.append(to_string(bike.count));
+            count++;
+            ID = object_type.append(to_string(count));
             cout << "I just made a moving object of type: " << object_type << endl;
         }
         //Destructor
         ~BIKES() override
         {
-            bike.count--;
+            count--;
             cout << "I just destroyed a moving object of type: " << object_type << endl;
         }
         void describe() const override
@@ -216,19 +155,19 @@ class StaticObjects : public WorldObject
 class STAT_VEH : public StaticObjects
 {
     private:
-        StatVehicle statveh;
+        int count;
     public:
         //Constructor
-        STAT_VEH(const char& glyph, const string& type, float x, float y, const string& obj_type_s, StatVehicle statveh)
-        : StaticObjects(glyph, type, x, y, obj_type_s), statveh(statveh)
+        STAT_VEH(const char& glyph, const string& type, float x, float y, const string& obj_type_s, int counter)
+        : StaticObjects(glyph, type, x, y, obj_type_s), count(counter)
         {
-            statveh.count++;
-            ID = object_type_s.append(to_string(statveh.count));
+            count++;
+            ID = object_type_s.append(to_string(count));
             cout << "I just made a static object of type: " << object_type_s << endl;
         } 
         ~STAT_VEH() override
         {
-            statveh.count--;
+            count--;
             cout << "I just destroyed a static object of type: " << object_type_s << endl;
         }
         void describe() const override
@@ -241,54 +180,90 @@ class STAT_VEH : public StaticObjects
 class TRAFFIC_SIGNS : public StaticObjects
 {
     private: 
-        TrafficSigns traf_signs;
+        string ID_TEXT;
+        int count;
     public: 
         //Constructor
-        TRAFFIC_SIGNS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, TrafficSigns traf_signs)
-        : StaticObjects(glyph, type, x, y, obj_type_s), traf_signs(traf_signs)
+        TRAFFIC_SIGNS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, 
+        const string& id_text, int counter)
+        : StaticObjects(glyph, type, x, y, obj_type_s), ID_TEXT(id_text), count(counter)
         {
-            traf_signs.count++;
-            ID = object_type_s.append(to_string(traf_signs.count));
+            count++;
+            ID = object_type_s.append(to_string(count));
             cout << "I just made a static object of type: " << object_type_s << endl;
         }
         //Destructor
         ~TRAFFIC_SIGNS() override
         {
-            traf_signs.count--;
+            count--;
             cout << "I just destroyed a static object of type: " << object_type_s << endl;
         }
         void describe() const override
         {
             cout << "Static object is of type: " << object_type_s << endl;
-            cout << "This traffic sing has id: " << ID << endl;
+            cout << "This traffic sing has id: " << ID << "and is a " << ID_TEXT << " sign" <<  endl;
         }
 };
 
 class TRAFFIC_LIGHTS : public StaticObjects
 {
     private:
-        TrafficLights traf_lights;
+        string COLOUR;
+        int count;
     public:
         //Constructor
-        TRAFFIC_LIGHTS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, TrafficLights traf_lights)
-        : StaticObjects(glyph, type, x, y, obj_type_s), traf_lights(traf_lights)
+        TRAFFIC_LIGHTS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, 
+        const string& colour, int counter)
+        : StaticObjects(glyph, type, x, y, obj_type_s), COLOUR(colour), count(counter)
         {
-            traf_lights.count++;
-            ID = object_type_s.append(to_string(traf_lights.count));
+            count++;
+            ID = object_type_s.append(to_string(count));
             cout << "I just made a static object of type: " << object_type_s << endl;
         }
         //Destructor
         ~TRAFFIC_LIGHTS() override
         {
-            traf_lights.count--;
+            count--;
             cout << "I just destroyed a static object of type: " << object_type_s << endl;
         }
         //Describe
         void describe() const override
         {
             cout << "Static object is of type: " << object_type_s << endl;   
-            cout << "This traffic light has id: " << ID << "and has colour: " << traf_lights.COLOUR << endl;
+            cout << "This traffic light has id: " << ID << "and has colour: " << COLOUR << endl;
         }
+};
+
+//----CLASS FOR SelfDrivingCar----//
+class SelfDrivingCar
+{
+    protected:
+        Direction car_direction;
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string speed;
+        //ALL SENSORS
+        LidarDetector first_sensor;
+        RadarDetector second_sensor;
+        CameraSensor third_sensor;
+        //class navigation system
+        NavigationSystem nav_system;
+    public:
+        //Constructor
+        //Destructor
+        //Describe
+};
+
+//Class for NavigationSystem
+class NavigationSystem
+{
+    private:
+        //GPS targets
+        float gps_x;
+        float gps_y;
+    public:
+        //Constructor
+        //Destructor
+        //fuseSensorData with SensorFusionEngine and MakeDesicion to move
 };
 
 //-----SENSORS-----//
@@ -319,18 +294,14 @@ class Sensors
 class Lidar : public Sensors
 {
     private:
-        LidarDetector lidar_detector;
-        //To find distance
-        Position pos;
         float distance;
-        string obj_type;
-        //Bebaiothta
-        float sure;
+        string object_type_detect;
+        float sureness;
     public:
         //Constructor
         Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
-        LidarDetector lidar_detector, Position pos, const string& obj_type, float sure)
-        : Sensors(sens_type, range, vis_range, accuracy), lidar_detector(lidar_detector), pos(pos), obj_type(obj_type), sure(sure)
+        float dist, const string& detect_object, float sure)
+        : Sensors(sens_type, range, vis_range, accuracy), distance(dist), object_type_detect(detect_object), sureness(sure)
         {
             cout << "One working lidar sensor\n";
             //Find distance
@@ -350,19 +321,16 @@ class Lidar : public Sensors
 class Radar : public Sensors
 {
     private:
-        RadarDetector radar_detector;
-        //To find distance
-        Position pos;
         float distance;
-        float speed;
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string speed;
         Direction movement_direction;
-        float sure;
+        float sureness;
     public:
         //Constructor
         Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
-        RadarDetector radar_detector, Position pos, float speed, Direction movement_direction, float sure)
-        : Sensors(sens_type, range, vis_range, accuracy), radar_detector(radar_detector), pos(pos),
-        speed(speed), movement_direction(movement_direction), sure(sure)
+        float dist, const string& sp, Direction dir, float sure)
+        : Sensors(sens_type, range, vis_range, accuracy), distance(dist), speed(sp), movement_direction(dir), sureness(sure)
         {
             cout << "One working radar sensor\n";
             //Find distance
@@ -385,20 +353,24 @@ class Camera : public Sensors
     private:
         string object_type_detect;
         float distance;
-        Position pos;
-        string Objectid;
-        float sure;
-        float speed;
+        //struct position
+        Position position;
+        string ObjectID;
+        float sureness;
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string speed;
         Direction movement_direction;
-        string signtext;    
-        string lightcolour;
+        //Signs can be STOP, YIELD etc
+        string SignText;
+        //GREEN, YELLOW, RED    
+        string LightColour;
     public: 
         //Constructor
         Camera(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
-        const string& object_type_detect, Position pos, const string& Objectid, float sure,
-        float speed, Direction movement_direction, const string& signtext, const string& lightcolour)
-        : Sensors(sens_type, range, vis_range, accuracy), object_type_detect(object_type_detect), pos(pos),
-        Objectid(Objectid), sure(sure), speed(speed), movement_direction(movement_direction), signtext(signtext), lightcolour(lightcolour)
+        const string& detect_object, float dist, Position pos, const string& obj_id, float sure, const string& sp,
+        Direction dir, const string& signtext, const string& lightcolour)
+        : Sensors(sens_type, range, vis_range, accuracy), object_type_detect(detect_object), distance(dist), position(pos),
+        ObjectID(obj_id), sureness(sure), speed(sp), movement_direction(dir), SignText(signtext), LightColour(lightcolour)
         {
             cout << "One camera sensor working\n";
             //Find distance
@@ -425,10 +397,10 @@ int main(int argc, char* argv[])
     }
     if(argc == 3)
     {
-        Direction direction;
-        direction.x = stof(argv[1]);
-        direction.y = stof(argv[2]);
-        cout << "I took coordinates: " << direction.x << " " << direction.y << endl;
+        Position start_pos;
+        start_pos.x = stof(argv[1]);
+        start_pos.y = stof(argv[2]);
+        cout << "I took coordinates: " << start_pos.x << " " << start_pos.y << endl;
     }
 
     return 0;
