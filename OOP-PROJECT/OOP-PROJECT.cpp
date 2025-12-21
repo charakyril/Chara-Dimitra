@@ -56,13 +56,14 @@ class WorldObject
 class MovingObjects : public WorldObject
 {
     protected:
-        int SPEED;
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string SPEED;
         Direction DIRECTION;
         //Car or bicycle
         string object_type;
     public:
         //Constructor
-        MovingObjects(const char& glyph, const string& type, float x, float y, int speed, Direction direction, const string& obj_type)
+        MovingObjects(const char& glyph, const string& type, float x, float y, const string& speed, Direction direction, const string& obj_type)
         : WorldObject(glyph, type, x, y), SPEED(speed), DIRECTION(direction), object_type(obj_type)
         {
             cout << "I just made a moving object of type: " << object_type << endl;
@@ -84,11 +85,11 @@ class CARS : public MovingObjects
     public:
         //Constructor
         CARS(const char& glyph, const string& type, float x, float y,
-         int speed, Direction direction, const string& obj_type, int counter)
+        const string& speed, Direction direction, const string& obj_type, int counter)
         : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
         {
-            car.count++;
-            ID = object_type.append(to_string(car.count));
+            count++;
+            ID = object_type.append(to_string(count));
             cout << "I just made a moving object of type: " << object_type << endl;
         }
         //Destructor
@@ -110,7 +111,7 @@ class BIKES : public MovingObjects
         int count;
     public:
         //Constructor
-        BIKES(const char& glyph, const string& type, float x, float y, int speed, Direction direction, const string& obj_type, int counter)
+        BIKES(const char& glyph, const string& type, float x, float y, const string& speed, Direction direction, const string& obj_type, int counter)
         : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
         {
             count++;
