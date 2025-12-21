@@ -9,7 +9,7 @@ unsigned int ticks = 0;
 
 //-----STRUCTS-----//
 
-//MAKE STRUCT DIRECTION FOR OBJECT
+//MAKE STRUCT DIRECTION
 struct Direction 
 {
     //Pairs of coordinates
@@ -234,38 +234,6 @@ class TRAFFIC_LIGHTS : public StaticObjects
         }
 };
 
-//----CLASS FOR SelfDrivingCar----//
-class SelfDrivingCar
-{
-    protected:
-        Direction car_direction;
-        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
-        string speed;
-        //ALL SENSORS
-        Lidar ld_sensor;
-        Radar rd_sensor;
-        Camera cam_sensor;
-        //class navigation system
-        NavigationSystem nav_system;
-    public:
-        //Constructor
-        //Destructor
-        //Describe
-};
-
-//Class for NavigationSystem
-class NavigationSystem
-{
-    private:
-        //GPS targets
-        float gps_x;
-        float gps_y;
-    public:
-        //Constructor
-        //Destructor
-        //fuseSensorData with SensorFusionEngine and MakeDesicion to move
-};
-
 //-----SENSORS-----//
 class Sensors 
 {
@@ -386,6 +354,50 @@ class Camera : public Sensors
             cout << "Sensor is of type: " << SENS_TYPE << endl;
         }
 };
+
+//Class for NavigationSystem
+class NavigationSystem
+{
+    private:
+        //GPS targets
+        float gps_x;
+        float gps_y;
+    public:
+        //Constructor
+        //Destructor
+        //fuseSensorData with SensorFusionEngine and MakeDesicion to move
+};
+
+
+//----CLASS FOR SelfDrivingCar----//
+class SelfDrivingCar
+{
+    protected:
+        Direction car_direction;
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string speed;
+        //ALL SENSORS
+        Lidar ld_sensor;
+        Radar rd_sensor;
+        Camera cam_sensor;
+        //class navigation system
+        NavigationSystem nav_system;
+    public:
+        //Constructor
+        SelfDrivingCar(Direction dir, const string& sp, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
+        : car_direction(dir), speed(sp), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
+        {
+            cout << "I made the self driving car\n";
+        }
+        //Destructor
+        ~SelfDrivingCar() 
+        {
+            cout << "No self driving car\n";
+        }
+
+        //Describe
+};
+
 
 //GPS targets as arguments from user
 int main(int argc, char* argv[])
