@@ -242,9 +242,9 @@ class SelfDrivingCar
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
         string speed;
         //ALL SENSORS
-        LidarDetector first_sensor;
-        RadarDetector second_sensor;
-        CameraSensor third_sensor;
+        Lidar ld_sensor;
+        Radar rd_sensor;
+        Camera cam_sensor;
         //class navigation system
         NavigationSystem nav_system;
     public:
