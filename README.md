@@ -16,4 +16,4 @@
 για να πάμε εκεί. 
 
 
-Χώρισα τις κλάσσεις σε header files για να είναι πιο οργανωμένα :)       (τρέχει κανονικά)
+Χώρισα τις κλάσσεις σε header files για να είναι πιο οργανωμένα :) Για να το τρέξεις make kai meta ./opp ean den trexei dokimase cd /home/users/sdi2400100/Chara-Dimitra/OOP-PROJECT && make kai meta cd /home/users/sdi2400100/Chara-Dimitra/OOP-PROJECT && ./opp (me ta orismata)
