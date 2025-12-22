@@ -10,9 +10,35 @@ using namespace std;
 //Global variable ticks//
 unsigned int ticks = 0;
 
-//-----STRUCTS-----//
-// Shared types (Position, Direction) are defined in types.h
-
+/*void printHelp ()
+{
+    cout << "Self −Driving Car Simulation" << endl;
+    cout << "Usage: " << endl;
+    cout << " −−seed <n>
+    Random seed ( default : current time)" << endl;
+    cout << " −−dimX <n>
+    cout << " −−dimY <n>
+    cout << " −−numMovingCars <n>
+    cout << " −−numMovingBikes <n>
+    cout << " −−numParkedCars <n>
+    cout << " −−numStopSigns <n>
+    cout << " −−numTrafficLights <n>
+    cout << " −−simulationTicks <n>
+    World width ( default : 40)" << endl;
+    World height ( default : 40)" << endl;
+    Number of moving cars ( default : 3)" << endl;
+    Number of moving bikes ( default : 4)" << endl;
+    Number of parked cars ( default : 5)" << endl;
+    Number of stop signs (default : 2)" << endl;
+    Number of traffic lights ( default : 2)" << endl;
+    Maximum simulation ticks ( default : 100)" << endl;
+    cout << " −−minConfidenceThreshold <n> Minimum confidence cutoff ( default : 40)" << endl;
+    cout << " −−gps <x1> <y1> [x2 y2 . . .] GPS target coordinates (required)" << endl;
+    cout << " −−help
+    Show this help message" << endl << endl;
+    cout << "Example usage: " << endl;
+    cout << " ./ oopproj_2025 −−seed 12 −−dimY 50 −−gps 10 20 32 15" << endl;
+}*/
 
 //Class for NavigationSystem
 class NavigationSystem
