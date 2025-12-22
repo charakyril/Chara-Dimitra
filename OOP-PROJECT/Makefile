@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -Wextra -std=c++17
 TARGET = oop
 
 # Source files
-SRC = OOP_Project.cpp 
+SRC = OOP-PROJECT.cpp world.cpp
 
 
 # Object files
