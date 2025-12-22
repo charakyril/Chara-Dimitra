@@ -10,6 +10,7 @@ using namespace std;
 //Global variable ticks//
 unsigned int ticks = 0;
 
+
 // Shared types (Position, Direction) are defined in types.h
 
 
