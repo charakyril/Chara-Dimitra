@@ -10,12 +10,10 @@ using namespace std;
 
 //Global variable ticks//
 unsigned int ticks = 0;
-<<<<<<< HEAD
+
 //Global variable gps_pos//
 Position gps_pos;
-=======
 
-<<<<<<< HEAD
 /*void printHelp ()
 {
     cout << "Self −Driving Car Simulation" << endl;
@@ -45,12 +43,8 @@ Position gps_pos;
     cout << "Example usage: " << endl;
     cout << " ./ oopproj_2025 −−seed 12 −−dimY 50 −−gps 10 20 32 15" << endl;
 }*/
-=======
->>>>>>> cfc7932978c9dd472608b24e0e991f1fd30329a6
 
 // Shared types (Position, Direction) are defined in types.h
-
->>>>>>> 4bcc5168117f1e89d4e1d4706cc1b970e68e1360
 
 //Class for NavigationSystem
 class NavigationSystem
