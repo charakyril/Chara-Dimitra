@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cctype>
+#include <cmath>
 #include "types.h"
 #include "world.h"
 #include "sensor.h"
@@ -9,7 +10,8 @@ using namespace std;
 
 //Global variable ticks//
 unsigned int ticks = 0;
-
+//Global variable gps_pos//
+Position gps_pos;
 
 // Shared types (Position, Direction) are defined in types.h
 
@@ -53,7 +55,42 @@ class SelfDrivingCar
         {
             cout << "No self driving car\n";
         }
-
+        //Accelerate
+        //Accelerates from stopped to half speed and from half speed to full speed
+        void Accelerate() const
+        {
+            if(speed == "STOPPED")
+                speed == "HALF_SPEED";
+            else if(speed == "HALF_SPEED")
+                speed == "FULL_SPEED";
+        }
+        //Decelerate
+        void Decelerate() const
+        {
+            if((cam_sensor.LightColour == "RED" || cam_sensor.LightColour == "YELLOW") && 
+            (cam_sensor.distance(cam_sensor.position, car_direction) <= 3))
+            {
+                if(speed == "FULL_SPEED")
+                    speed == "HALF_SPEED";
+                if(speed == "HALF_SPEED")
+                    speed == "STOPPED";
+            }
+            if(cam_sensor.gps_distance(cam_sensor.position, car_direction) <= 5)
+            {
+                if(speed == "FULL_SPEED")
+                    speed == "HALF_SPEED";
+                if(speed == "HALF_SPEED")
+                    speed == "STOPPED";
+            }
+            //Need to do global variable gps_pos
+            if(cam_sensor.distance(gps_pos, car_direction) <= 2)
+            {
+                if(speed == "FULL_SPEED")
+                    speed == "HALF_SPEED";
+                if(speed == "HALF_SPEED")
+                    speed == "STOPPED";
+            }
+        }
         //Describe
 };
 
@@ -68,10 +105,9 @@ int main(int argc, char* argv[])
     }
     if(argc == 3)
     {
-        Position start_pos;
-        start_pos.x = stof(argv[1]);
-        start_pos.y = stof(argv[2]);
-        cout << "I took coordinates: " << start_pos.x << " " << start_pos.y << endl;
+        gps_pos.x = stof(argv[1]);
+        gps_pos.y = stof(argv[2]);
+        cout << "I took coordinates: " << gps_pos.x << " " << gps_pos.y << endl;
     }
 
     return 0;

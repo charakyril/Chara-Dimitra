@@ -4,17 +4,19 @@
 #include <iostream>
 #include <string>
 #include "types.h"
+#include <cmath>
+
 using namespace std;
 
 //-----SENSORS-----//
 class Sensors 
 {
-    protected:
+    public:
         string SENS_TYPE;
         unsigned int RANGE;
         unsigned int VIS_RANGE;
         int ACCURACY;
-    public:
+
         //Constructor
         Sensors(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy)
         : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), ACCURACY(accuracy)
@@ -33,11 +35,11 @@ class Sensors
 //----SENSOR LIDAR----//
 class Lidar : public Sensors
 {
-    private:
+    public:
         float distance;
         string object_type_detect;
         float sureness;
-    public:
+    
         //Constructor
         Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
         float dist, const string& detect_object, float sure)
@@ -60,13 +62,13 @@ class Lidar : public Sensors
 //----SENSOR RADAR----//
 class Radar : public Sensors
 {
-    private:
+    public:
         float distance;
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
         string speed;
         Direction movement_direction;
         float sureness;
-    public:
+    
         //Constructor
         Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
         float dist, const string& sp, Direction dir, float sure)
@@ -90,35 +92,45 @@ class Radar : public Sensors
 //----CAMERA SENSOR----//
 class Camera : public Sensors
 {
-    private:
+    public:
         string object_type_detect;
-        float distance;
-        //struct position
+        //position of object
         Position position;
         string ObjectID;
         float sureness;
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
         string speed;
+        //position of car
         Direction movement_direction;
         //Signs can be STOP, YIELD etc
         string SignText;
         //GREEN, YELLOW, RED    
         string LightColour;
-    public: 
+
         //Constructor
         Camera(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
-        const string& detect_object, float dist, Position pos, const string& obj_id, float sure, const string& sp,
+        const string& detect_object, Position pos, const string& obj_id, float sure, const string& sp,
         Direction dir, const string& signtext, const string& lightcolour)
-        : Sensors(sens_type, range, vis_range, accuracy), object_type_detect(detect_object), distance(dist), position(pos),
-        ObjectID(obj_id), sureness(sure), speed(sp), movement_direction(dir), SignText(signtext), LightColour(lightcolour)
+        : Sensors(sens_type, range, vis_range, accuracy), object_type_detect(detect_object),position(pos), ObjectID(obj_id),
+        sureness(sure), speed(sp), movement_direction(dir), SignText(signtext), LightColour(lightcolour)
         {
             cout << "One camera sensor working\n";
-            //Find distance
+            
         }       
         //Destructor
         ~Camera() override
         {
             cout << "Camera sensor stopped working\n";
+        }
+        //distance from object
+        int distance(Position position, Direction movement_direction) const
+        {
+            return (abs(position.x - movement_direction.x) + (abs(position.y - movement_direction.y)));
+        }
+        //distance from gps target
+        int gps_distance(Position gps_pos, Direction movement_direction) const
+        {
+            return (abs(gps_pos.x - movement_direction.x) + (abs(gps_pos.y - movement_direction.y)));
         }
         //Describe
         void describe_sensor() const override
