@@ -64,7 +64,10 @@ class NavigationSystem
 class SelfDrivingCar
 {
     protected:
+        //Car direction
         Direction car_direction;
+        //Car position
+        Position car_position;
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
         string speed;
         //ALL SENSORS
@@ -75,8 +78,8 @@ class SelfDrivingCar
         NavigationSystem nav_system;
     public:
         //Constructor
-        SelfDrivingCar(Direction dir, const string& sp, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
-        : car_direction(dir), speed(sp), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
+        SelfDrivingCar(Direction dir, Position car_pos, const string& sp, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
+        : car_direction(dir), car_position(car_pos), speed(sp), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
         {
             cout << "I made the self driving car\n";
         }
@@ -95,29 +98,35 @@ class SelfDrivingCar
                 speed == "FULL_SPEED";
         }
         //Decelerate
+        //3 periptwseis pou to car kobei taxythta
         void Decelerate() const
         {
+            //An fanari entos 3 thesewn
+            //Εδώ δεν χρειάζεται γιατί μόνο ο camera βλέπει χρώμα φαναριών 
             if((cam_sensor.LightColour == "RED" || cam_sensor.LightColour == "YELLOW") && 
-            (cam_sensor.distance(cam_sensor.position, car_direction) <= 3))
+            (cam_sensor.distance(cam_sensor.position, car_position) <= 3)) //distance of car and object
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
-                if(speed == "HALF_SPEED")
+                else if(speed == "HALF_SPEED")
                     speed == "STOPPED";
             }
-            if(cam_sensor.gps_distance(cam_sensor.position, car_direction) <= 5)
+            //An stoxos GPS entos 5 thesewn
+            //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
+            if(cam_sensor.gps_distance(cam_sensor.position, car_position) <= 5) //distance of car and gps target
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
-                if(speed == "HALF_SPEED")
+                else if(speed == "HALF_SPEED")
                     speed == "STOPPED";
             }
-            //Need to do global variable gps_pos
-            if(cam_sensor.distance(gps_pos, car_direction) <= 2)
+            //An kinoumeno antikeimeno entos 2 thesewn
+            //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
+            if(cam_sensor.distance(cam_sensor.position, car_position) <= 2) //distance of car and object 
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
-                if(speed == "HALF_SPEED")
+                else if(speed == "HALF_SPEED")
                     speed == "STOPPED";
             }
         }
