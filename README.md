@@ -17,3 +17,8 @@
 
 
 Χώρισα τις κλάσσεις σε header files για να είναι πιο οργανωμένα :) Για να το τρέξεις make kai meta ./opp ean den trexei dokimase cd /home/users/sdi2400100/Chara-Dimitra/OOP-PROJECT && make kai meta cd /home/users/sdi2400100/Chara-Dimitra/OOP-PROJECT && ./opp (me ta orismata)
+
+
+Τέλειο Χαρούλα :) 
+Εγώ έβαλα συναρτήσεις accelerate, decelerate sto SelfDrivingCar και έβαλα συναρτήσεις distance, distance from gps target στον camera sensor.
+Επίσης στους sensors δήλωσα τα πάντα public για να μπορούν να χρησιμοποιηθούν παντού στον κώδικα, και έκανα την gps_pos Global για να χρησιμοποιείται παντού
