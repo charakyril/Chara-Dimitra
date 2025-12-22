@@ -10,11 +10,47 @@ using namespace std;
 
 //Global variable ticks//
 unsigned int ticks = 0;
+<<<<<<< HEAD
 //Global variable gps_pos//
 Position gps_pos;
+=======
+
+<<<<<<< HEAD
+/*void printHelp ()
+{
+    cout << "Self −Driving Car Simulation" << endl;
+    cout << "Usage: " << endl;
+    cout << " −−seed <n>
+    Random seed ( default : current time)" << endl;
+    cout << " −−dimX <n>
+    cout << " −−dimY <n>
+    cout << " −−numMovingCars <n>
+    cout << " −−numMovingBikes <n>
+    cout << " −−numParkedCars <n>
+    cout << " −−numStopSigns <n>
+    cout << " −−numTrafficLights <n>
+    cout << " −−simulationTicks <n>
+    World width ( default : 40)" << endl;
+    World height ( default : 40)" << endl;
+    Number of moving cars ( default : 3)" << endl;
+    Number of moving bikes ( default : 4)" << endl;
+    Number of parked cars ( default : 5)" << endl;
+    Number of stop signs (default : 2)" << endl;
+    Number of traffic lights ( default : 2)" << endl;
+    Maximum simulation ticks ( default : 100)" << endl;
+    cout << " −−minConfidenceThreshold <n> Minimum confidence cutoff ( default : 40)" << endl;
+    cout << " −−gps <x1> <y1> [x2 y2 . . .] GPS target coordinates (required)" << endl;
+    cout << " −−help
+    Show this help message" << endl << endl;
+    cout << "Example usage: " << endl;
+    cout << " ./ oopproj_2025 −−seed 12 −−dimY 50 −−gps 10 20 32 15" << endl;
+}*/
+=======
+>>>>>>> cfc7932978c9dd472608b24e0e991f1fd30329a6
 
 // Shared types (Position, Direction) are defined in types.h
 
+>>>>>>> 4bcc5168117f1e89d4e1d4706cc1b970e68e1360
 
 //Class for NavigationSystem
 class NavigationSystem
