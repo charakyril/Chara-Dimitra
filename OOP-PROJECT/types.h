@@ -14,4 +14,5 @@ struct Position
     int y;
 };
 
+
 #endif // TYPES_H
