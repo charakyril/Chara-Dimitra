@@ -113,7 +113,7 @@ class SelfDrivingCar
             }
             //An stoxos GPS entos 5 thesewn
             //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
-            if(cam_sensor.GPS_distance() <= 5) //distance of car and gps target
+            if(cam_sensor.GPS_distance(gps_pos) <= 5) //distance of car and gps target
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";

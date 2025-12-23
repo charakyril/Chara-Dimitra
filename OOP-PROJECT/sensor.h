@@ -67,7 +67,7 @@ class Lidar : public Sensors
             return ((abs(position.x - car_position.x) + (abs(position.y - car_position.y))) + 0.05); //noise
         }
         //Distance from gps target
-        int GPS_distance() const
+        int GPS_distance(Position gps_pos) const
         {
             return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
         }
@@ -119,7 +119,7 @@ class Radar : public Sensors
             return (abs(position.x - car_position.x) + (abs(position.y - car_position.y)) + 0.05); //noise
         }
         //Distance from gps target
-        int GPS_distance() const
+        int GPS_distance(Position gps_pos) const
         {
             return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
         }
@@ -174,7 +174,7 @@ class Camera : public Sensors
             return (abs(position.x - car_position.x) + (abs(position.y - car_position.y)) + 0.05); //noise
         }
         //distance from gps target
-        int GPS_distance() const
+        int GPS_distance(Position gps_pos) const
         {
             return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
         }
