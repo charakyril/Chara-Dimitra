@@ -104,7 +104,7 @@ class SelfDrivingCar
             //An fanari entos 3 thesewn
             //Εδώ δεν χρειάζεται γιατί μόνο ο camera βλέπει χρώμα φαναριών 
             if((cam_sensor.LightColour == "RED" || cam_sensor.LightColour == "YELLOW") && 
-            (cam_sensor.distance(cam_sensor.position, car_position) <= 3)) //distance of car and object
+            (cam_sensor.distance() <= 3)) //distance of car and object
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
@@ -113,7 +113,7 @@ class SelfDrivingCar
             }
             //An stoxos GPS entos 5 thesewn
             //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
-            if(cam_sensor.gps_distance(cam_sensor.position, car_position) <= 5) //distance of car and gps target
+            if(cam_sensor.GPS_distance() <= 5) //distance of car and gps target
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
@@ -122,7 +122,7 @@ class SelfDrivingCar
             }
             //An kinoumeno antikeimeno entos 2 thesewn
             //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
-            if(cam_sensor.distance(cam_sensor.position, car_position) <= 2) //distance of car and object 
+            if(cam_sensor.distance() <= 2) //distance of car and object 
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
@@ -132,7 +132,6 @@ class SelfDrivingCar
         }
         //Describe
 };
-
 
 //GPS targets as arguments from user
 int main(int argc, char* argv[])
