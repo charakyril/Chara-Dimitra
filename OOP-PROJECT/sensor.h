@@ -15,18 +15,11 @@ class Sensors
         string SENS_TYPE;
         unsigned int RANGE;
         unsigned int VIS_RANGE;
-        int DISTANCE_ACCURACY;
-        int CATEGORY_ACCURACY;
-        //Car direction
-        Direction movement_direction;
-        //Object position
-        Position position;
-        //Car position
-        Position car_position;
+        int ACCURACY;
 
         //Constructor
         Sensors(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos, Position car_pos)
-        : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), movement_direction(dir), position(pos), car_position(car_pos)
+        : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), ACCURACY(accuracy)
         {
             cout << "I just made a sensor\n";
         }

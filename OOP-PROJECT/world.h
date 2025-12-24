@@ -1,3 +1,5 @@
+// DONE 
+
 #ifndef WORLD_H
 #define WORLD_H
 
@@ -31,6 +33,30 @@ class WorldObject
         }
         //Virtual describe function for polymorphism
         virtual void describe() const = 0;
+
+        //Accessors
+        Position getPosition() const
+        {
+            return POSITION;
+        }
+        void setPosition(int x, int y) {
+            POSITION.x=x;
+            POSITION.y=y;
+        }
+        string getID() const {
+            return ID;
+        }
+        char getGlyph() const {
+            return GLYPH;
+        }
+        string getType() const {
+            return TYPE;
+        }
+
+        // Mπορεί να είναι λάθος εδώ
+        virtual void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) {
+            // Default implementation (if any)
+        }
 };
 
 //Generative class 1 of Objects//
@@ -55,7 +81,34 @@ class MovingObjects : public WorldObject
         }
         //Describe function
         virtual void describe() const = 0;
-};
+
+        //update position based on speed and direction
+        void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override
+        {
+            int steps=0;
+            if(SPEED == "FULL_SPEED") {
+                steps=2;   
+            } else if{
+                SPEED=="HALF_SPEED"
+                steps=1;
+            } else{
+                steps=0;
+            }
+            for(int i =0; i< steps; ++i) {
+                int nx = POSITION.x + DIRECTION.x;
+                int ny = POSITION.y + DIRECTION.y;
+                //if moved outside of bounds, mark with negative coordinates
+                if(nx < 0 || ny < 0 || nx >= dimX || ny >= dimY) {
+                    POSITION.x = -1;
+                    POSITION.y = -1;
+                    return;
+                } else {
+                    POSITION.x = nx;
+                    POSITION.y = ny;
+                }
+            }
+        };
+}
 
 //GENERATIVE CLASSES FOR MOVING OBJECTS//
 
@@ -212,6 +265,22 @@ class TRAFFIC_LIGHTS : public StaticObjects
         {
             cout << "Static object is of type: " << object_type_s << endl;   
             cout << "This traffic light has id: " << ID << "and has colour: " << COLOUR << endl;
+        }
+        //update light colour based on tick (red 4, green 8, yellow 2)
+        void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override {
+            unsigned int cycle = t%14u; //u = unsigned int
+            if(cycle < 4u) {
+                COLOUR = "RED";
+            } else if(cycle < 12u) {
+                COLOUR = "GREEN";
+            } else {
+                COLOUR = "YELLOW";
+            }
+
+        }
+
+        string getColour() const {
+            return COLOUR;
         }
 };
 

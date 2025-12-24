@@ -152,6 +152,131 @@ int main(int argc, char* argv[]) {
     cout << "Example usage: " << endl;
     cout << " ./ oopproj_2025 −−seed 12 −−dimY 50 −−gps 10 20 32 15" << endl;
     }
+    
+    // επεξεργασία arguments
+    for(int i = 1; i < argc; ++i) {
+        string a = argv[i];
+        
+        if(a == --help){
+            printHelp();
+            return 0;
+        } else if(a == "--seed") {
+            if (i + 1 >= argc) {
+                cerr << "--seed requires a value\n";
+                return 1;
+            } 
+            try { seed = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --seed\n";
+                return 1;
+            }
+        } else if(a == "--dimX") {
+            if (i + 1 >= argc) {
+                cerr << "--dimX requires a value\n";
+                return 1;
+            } 
+            try { dimX = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --dimX\n";
+                return 1;
+            }
+        } else if(a == "--dimY") {
+            if (i + 1 >= argc) {
+                cerr << "--dimY requires a value\n";
+                return 1;
+            } 
+            try { dimY = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --dimY\n";
+                return 1;
+            }
+        } else if(a == "--numMovingCars") {
+            if (i + 1 >= argc) {
+                cerr << "--numMovingCars requires a value\n";
+                return 1;
+            } 
+            try { numMovingCars = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --numMovingCars\n";
+                return 1;
+            }
+        } else if(a == "--numMovingBikes") {
+            if (i + 1 >= argc) {
+                cerr << "--numMovingBikes requires a value\n";
+                return 1;
+            } 
+            try { numMovingBikes = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --numMovingBikes\n";
+                return 1;
+            }
+        } else if(a == "--numParkedCars") {
+            if (i + 1 >= argc) {
+                cerr << "--numParkedCars requires a value\n";
+                return 1;
+            } 
+            try { numParkedCars = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --numParkedCars\n";
+                return 1;
+            }
+        } else if(a == "--numStopSigns") {
+            if (i + 1 >= argc) {
+                cerr << "--numStopSigns requires a value\n";
+                return 1;
+            } 
+            try { numStopSigns = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --numStopSigns\n";
+                return 1;
+            }
+        } else if(a == "--numStopSigns") {
+            if (i + 1 >= argc) {
+                cerr << "--numStopSigns requires a value\n";
+                return 1;
+            } 
+            try { numStopSigns = stoull(argv[++i]); }
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --numStopSigns\n";
+                return 1;
+            }
+        } else if(a == "--numTrafficLights") {
+            if (i + 1 >= argc) {
+                cerr << "--numTrafficLights requires a value\n";
+                return 1;
+            } 
+            try { numTrafficLights = stoull(argv[++i]); }
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --numTrafficLights\n";
+                return 1;
+            }
+        } else if(a == "--simulationTicks") {
+            if (i + 1 >= argc) {
+                cerr << "--simulationTicks requires a value\n";
+                return 1;
+            } 
+            try { simulationTicks = stoull(argv[++i]); } 
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --simulationTicks\n";
+                return 1;
+            }
+        } else if(a == "--minConfidenceThreshold") {
+            if (i + 1 >= argc) {
+                cerr << "--minConfidenceThreshold requires a value\n";
+                return 1;
+            } 
+            try { minConfidenceThreshold = stoull(argv[++i]); }
+            catch (const invalid_argument&) {
+                cerr << "Invalid value for --minConfidenceThreshold\n";
+                return 1;
+            }
+        } // else gps targets
+        else if(a == "--gps") {
+
+        }
+    }
+
+
 
 
 
