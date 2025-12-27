@@ -3,6 +3,7 @@
 #include <cctype>
 #include <cmath>
 #include "types.h"
+#include "navigation.h"
 #include "world.h"
 #include "sensor.h"
 #include <random>
@@ -257,7 +258,7 @@ int main(int argc, char* argv[]) {
                 cerr << "Invalid value for --minConfidenceThreshold\n";
                 return 1;
             }
-        } // else gps targets
+        } // else gps targets one or more pairs
         else if(a == "--gps") {
             // collect trailing tokens until next --flag or end
             int j = i + 1;
@@ -265,8 +266,10 @@ int main(int argc, char* argv[]) {
             while (j < argc && string(argv[j]).rfind("--", 0) != 0) {
                 tokens.push_back(argv[j++]);
             }
+            //need at least one pair
             if (tokens.empty()) { cerr << "--gps requires at least one pair of coordinates\n"; return 1; }
             if (tokens.size() % 2 != 0) { cerr << "--gps requires x y pairs (even number of values)\n"; return 1; }
+            // Convert token pairs to Position objects and store them
             for (size_t k = 0; k < tokens.size(); k += 2) {
                 try {
                     int x = stoi(tokens[k]);
@@ -274,8 +277,9 @@ int main(int argc, char* argv[]) {
                     gpsTargets.push_back(Position{x, y});
                 } catch (...) { cerr << "Invalid GPS coordinates\n"; return 1; }
             }
-            i = j - 1; // advance main loop
+            i = j - 1; // advance main loop to last processed GPS token
         } else {
+            // Any unknown flag triggers an error and prints help
             cerr << "Unknown argument: " << a << "\n";
             printHelp();
             return 1;

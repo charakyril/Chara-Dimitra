@@ -13,9 +13,13 @@ using namespace std;
 class Sensors 
 {
     public:
+        //lidar, radar, camera
         string SENS_TYPE;
+        //maximum detection range
         unsigned int RANGE;
+        //visible range
         unsigned int VIS_RANGE;
+        //accuracy of sensor
         int ACCURACY;
 
         //Constructor
@@ -37,8 +41,11 @@ class Sensors
 class Lidar : public Sensors
 {
     public:
+    //Detected object type car, bike, traffic light, stop sign
         string object_type_detect;
+        //distance from object
         float distance;
+        //certainty of detection
         float sureness;
         
         //Constructor
@@ -89,7 +96,9 @@ class Radar : public Sensors
     public:
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
         string speed;
+        //certainty of detection
         float sureness;
+        //movement direction of detected object
         Direction movement_direction;
     
         //Constructor
@@ -133,9 +142,11 @@ class Radar : public Sensors
 class Camera : public Sensors
 {
     public:
+    //Detected object type car, bike, traffic light, stop sign
         string object_type_detect;
         //position of object
         Position position;
+        //object ID
         string ObjectID;
         float sureness;
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
@@ -163,11 +174,13 @@ class Camera : public Sensors
         //distance from object
         int distance(Position position, Direction movement_direction) const
         {
+            // Manhattan distance; you can add noise if needed
             return (abs(position.x - movement_direction.x) + (abs(position.y - movement_direction.y))); //noise + 0,05
         }
         //distance from gps target
         int GPS_distance(Position gps_pos, Direction movement_direction) const
         {
+             // Distance from GPS target
             return (abs(gps_pos.x - movement_direction.x) + (abs(gps_pos.y - movement_direction.y))); //noise + 0,05
         }
         /*/Returns certainty

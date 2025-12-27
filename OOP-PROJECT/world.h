@@ -39,10 +39,12 @@ class WorldObject
         {
             return POSITION;
         }
+        //set position explicitly
         void setPosition(int x, int y) {
             POSITION.x=x;
             POSITION.y=y;
         }
+        //return id
         string getID() const {
             return ID;
         }
@@ -53,9 +55,10 @@ class WorldObject
             return TYPE;
         }
 
-        // Mπορεί να είναι λάθος εδώ
+       // Per-tick update (default: do nothing).
+    // Moving objects or traffic lights override this to change state each tick.
         virtual void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) {
-            // Default implementation (if any)
+            // Default implementation: static behaviour
         }
 };
 
@@ -83,6 +86,8 @@ class MovingObjects : public WorldObject
         virtual void describe() const = 0;
 
         //update position based on speed and direction
+         // Per-tick position update based on speed and direction.
+        // If the object moves outside the world bounds, it is marked "inactive"
         void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override
         {
             int steps=0;
@@ -94,6 +99,7 @@ class MovingObjects : public WorldObject
             } else{
                 steps=0;
             }
+            // Move one cell at a time up to 'steps' cells
             for(int i =0; i< steps; ++i) {
                 int nx = POSITION.x + DIRECTION.x;
                 int ny = POSITION.y + DIRECTION.y;
@@ -115,6 +121,7 @@ class MovingObjects : public WorldObject
 class CARS : public MovingObjects
 {
     private:
+        //Local counter used to build IDs (e.g. CAR1, CAR2)
         int count;
     public:
         //Constructor
@@ -266,8 +273,10 @@ class TRAFFIC_LIGHTS : public StaticObjects
             cout << "Static object is of type: " << object_type_s << endl;   
             cout << "This traffic light has id: " << ID << "and has colour: " << COLOUR << endl;
         }
-        //update light colour based on tick (red 4, green 8, yellow 2)
+        // Per-tick update for light colour.
+    // Cycle: RED for 4 ticks, GREEN for 8 ticks, YELLOW for 2 ticks (total 14).
         void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override {
+            // full cycle length = 14
             unsigned int cycle = t%14u; //u = unsigned int
             if(cycle < 4u) {
                 COLOUR = "RED";
@@ -278,7 +287,7 @@ class TRAFFIC_LIGHTS : public StaticObjects
             }
 
         }
-
+        // Getter for current colour (used by sensors / car logic)
         string getColour() const {
             return COLOUR;
         }
