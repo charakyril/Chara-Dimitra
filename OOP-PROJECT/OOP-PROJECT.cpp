@@ -17,19 +17,6 @@ Position gps_pos;
 
 // Shared types (Position, Direction) are defined in types.h
 
-//Class for NavigationSystem
-class NavigationSystem
-{
-    private:
-        //GPS targets
-        float gps_x;
-        float gps_y;
-    public:
-        //Constructor
-        //Destructor
-        //fuseSensorData with SensorFusionEngine and MakeDesicion to move
-};
-
 
 //----CLASS FOR SelfDrivingCar----//
 class SelfDrivingCar
@@ -272,16 +259,29 @@ int main(int argc, char* argv[]) {
             }
         } // else gps targets
         else if(a == "--gps") {
-
+            // collect trailing tokens until next --flag or end
+            int j = i + 1;
+            vector<string> tokens;
+            while (j < argc && string(argv[j]).rfind("--", 0) != 0) {
+                tokens.push_back(argv[j++]);
+            }
+            if (tokens.empty()) { cerr << "--gps requires at least one pair of coordinates\n"; return 1; }
+            if (tokens.size() % 2 != 0) { cerr << "--gps requires x y pairs (even number of values)\n"; return 1; }
+            for (size_t k = 0; k < tokens.size(); k += 2) {
+                try {
+                    int x = stoi(tokens[k]);
+                    int y = stoi(tokens[k + 1]);
+                    gpsTargets.push_back(Position{x, y});
+                } catch (...) { cerr << "Invalid GPS coordinates\n"; return 1; }
+            }
+            i = j - 1; // advance main loop
+        } else {
+            cerr << "Unknown argument: " << a << "\n";
+            printHelp();
+            return 1;
         }
+
     }
-
-
-
-
-
-
-
 
     return 0;
 }

@@ -1,3 +1,4 @@
+
 #ifndef SENSOR_H
 #define SENSOR_H
 
@@ -37,25 +38,24 @@ class Lidar : public Sensors
 {
     public:
         string object_type_detect;
+        float distance;
+        float sureness;
         
         //Constructor
-        Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos, 
-        Position car_pos, const string& detect_object)
-        : Sensors(sens_type, range, vis_range, dir, pos, car_pos), object_type_detect(detect_object)
+        Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, 
+        const string& detect_object, float dist, float sure)
+        : Sensors(sens_type, range, accuracy), distance(dist), object_type_detect(detect_object), sureness(sure)
         {
-            //Every sensor has it's own accuracy
-            DISTANCE_ACCURACY = 99;
-            CATEGORY_ACCURACY = 87;
-            cout << "One working lidar sensor\n";
-            //Find distance
+
+            cout << "One working lidar sensor\n"
         }
         //Destructor
         ~Lidar() override
         {
             cout << "Lidar sensor stopped operating\n";
         }
-        //Distance from object
-        int distance() const
+        /*Distance from object
+        void distance_sensor() const override
         {
             return ((abs(position.x - car_position.x) + (abs(position.y - car_position.y))) + 0.05); //noise
         }
@@ -75,7 +75,7 @@ class Lidar : public Sensors
             //Confidence = (akribeia kathe metrhshs / plithos metrhsewn(2)) / 100
             float sureness = ((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100;
             return sureness;
-        }
+        }*/
         //Describe
         void describe_sensor() const override
         {
@@ -90,14 +90,13 @@ class Radar : public Sensors
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
         string speed;
         float sureness;
+        Direction movement_direction;
     
         //Constructor
-        Radar(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos,  
-        Position car_pos, const string& sp, float sure)
+        Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy, float dist, const string& sp, 
+        float sure, Direction dir)
         : Sensors(sens_type, range, vis_range, dir, pos, car_pos), speed(sp), sureness(sure)
         {
-            DISTANCE_ACCURACY = 95;
-            CATEGORY_ACCURACY = 95;
             cout << "One working radar sensor\n";
             //Find distance
         }
@@ -106,7 +105,7 @@ class Radar : public Sensors
         {
             cout << "Radar sensor stopped operating\n";
         }
-        //Distance from object
+        /*/Distance from object
         int distance() const
         {
             return (abs(position.x - car_position.x) + (abs(position.y - car_position.y)) + 0.05); //noise
@@ -122,7 +121,7 @@ class Radar : public Sensors
             //Confidence = (akribeia kathe metrhshs / plithos metrhsewn(2)) / 100
             float sureness = ((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100;
             return sureness;
-        }
+        }*/
         //Describe
         void describe_sensor() const override
         {
@@ -135,6 +134,8 @@ class Camera : public Sensors
 {
     public:
         string object_type_detect;
+        //position of object
+        Position position;
         string ObjectID;
         float sureness;
         //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
@@ -145,40 +146,38 @@ class Camera : public Sensors
         string LightColour;
 
         //Constructor
-        Camera(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos,  
-        Position car_pos, const string& detect_object, const string& obj_id, float sure, const string& sp, 
-        const string& signtext, const string& lightcolour)
-        : Sensors(sens_type, range, vis_range, dir, pos, car_pos), object_type_detect(detect_object), ObjectID(obj_id),
-        sureness(sure), speed(sp), SignText(signtext), LightColour(lightcolour)
+        Camera(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
+        const string& detect_object, Position pos, const string& obj_id, float sure, const string& sp,
+        Direction dir, const string& signtext, const string& lightcolour)
+        : Sensors(sens_type, range, vis_range, accuracy), object_type_detect(detect_object),position(pos), ObjectID(obj_id),
+        sureness(sure), speed(sp), movement_direction(dir), SignText(signtext), LightColour(lightcolour)
         {
-            DISTANCE_ACCURACY = 95;
-            CATEGORY_ACCURACY = 87;
             cout << "One camera sensor working\n";
             
-        }       
+        } 
         //Destructor
         ~Camera() override
         {
             cout << "Camera sensor stopped working\n";
         }
         //distance from object
-        int distance() const
+        int distance(Position position, Direction movement_direction) const
         {
-            return (abs(position.x - car_position.x) + (abs(position.y - car_position.y)) + 0.05); //noise
+            return (abs(position.x - movement_direction.x) + (abs(position.y - movement_direction.y))); //noise + 0,05
         }
         //distance from gps target
-        int GPS_distance(Position gps_pos) const
+        int GPS_distance(Position gps_pos, Direction movement_direction) const
         {
-            return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
+            return (abs(gps_pos.x - movement_direction.x) + (abs(gps_pos.y - movement_direction.y))); //noise + 0,05
         }
-        //Returns certainty
+        /*/Returns certainty
         float Confidence()
         {
             //Confidence = (akribeia kathe metrhshs / plithos metrhsewn(2)) / 100
             float sureness = ((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100;
             return sureness;
         }
-        //Describe
+        /*/Describe
         void describe_sensor() const override
         {
             cout << "Sensor is of type: " << SENS_TYPE << endl;

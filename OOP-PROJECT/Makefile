@@ -21,7 +21,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJ)
 # Compile source files into object files
-%.o: %.cpp types.h world.h sensor.h sensor_reading.h
+%.o: %.cpp types.h world.h sensor.h sensor_reading.h navigation.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 # Clean up build files
 clean:
