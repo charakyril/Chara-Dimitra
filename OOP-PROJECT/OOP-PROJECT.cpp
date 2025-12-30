@@ -6,17 +6,13 @@
 #include "navigation.h"
 #include "world.h"
 #include "sensor.h"
+#include "sensor_reading.h"
 #include <random>
 
 using namespace std;
 
 //Global variable ticks//
 unsigned int ticks = 0;
-
-//Global variable gps_pos//
-Position gps_pos;
-
-// Shared types (Position, Direction) are defined in types.h
 
 
 //----CLASS FOR SelfDrivingCar----//
@@ -27,18 +23,12 @@ class SelfDrivingCar
         Direction car_direction;
         //Car position
         Position car_position;
-        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
-        string speed;
-        //ALL SENSORS
-        Lidar ld_sensor;
-        Radar rd_sensor;
-        Camera cam_sensor;
         //class navigation system
         NavigationSystem nav_system;
     public:
         //Constructor
-        SelfDrivingCar(Direction dir, Position car_pos, const string& sp, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
-        : car_direction(dir), car_position(car_pos), speed(sp), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
+        SelfDrivingCar(Direction dir, Position car_pos, NavigationSystem nav)
+        : car_direction(dir), car_position(car_pos), nav_system(nav)
         {
             cout << "I made the self driving car\n";
         }
@@ -47,6 +37,24 @@ class SelfDrivingCar
         {
             cout << "No self driving car\n";
         }
+        //Added gps distance in here instead of camera sensor
+        //Distance from gps target
+        float GPS_distance(vector<Position>& gpsTargets) const
+        {
+            if (gpsTargets.empty()) return 0.0f;
+            
+            float minDistance = 1000000000;
+            
+            for (const Position& target : gpsTargets) 
+            {
+                float dist = abs(target.x - car_position.x) + abs(target.y - car_position.y);
+                if (dist < minDistance) 
+                {
+                    minDistance = dist;
+                }
+            }    
+            return minDistance;
+        }       
         //Accelerate
         //Accelerates from stopped to half speed and from half speed to full speed
         void Accelerate() const
@@ -61,9 +69,9 @@ class SelfDrivingCar
         void Decelerate() const
         {
             //An fanari entos 3 thesewn
-            //Εδώ δεν χρειάζεται γιατί μόνο ο camera βλέπει χρώμα φαναριών 
-            if((cam_sensor.LightColour == "RED" || cam_sensor.LightColour == "YELLOW") && 
-            (cam_sensor.distance() <= 3)) //distance of car and object
+            if((nav_system.fusionEngine.fusedResults.lightColour == "RED" || nav_system.fusionEngine.fusedResults.lightColour  = "YELLOW") && 
+            //Put fused data in sensor_reading
+            (nav_system.fusionEngine.fusedResults.distance <= 3)) //distance of car and object
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
@@ -71,8 +79,7 @@ class SelfDrivingCar
                     speed == "STOPPED";
             }
             //An stoxos GPS entos 5 thesewn
-            //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
-            if(cam_sensor.GPS_distance(gps_pos) <= 5) //distance of car and gps target
+            if(GPS_distance(gpsTargets) <= 5) //distance of car and gps target
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
@@ -81,7 +88,7 @@ class SelfDrivingCar
             }
             //An kinoumeno antikeimeno entos 2 thesewn
             //isos xreiazetai συγχώνευση μετρήσεων από τους αισθητήρες
-            if(cam_sensor.distance() <= 2) //distance of car and object 
+            if(nav_system.fusionEngine.fusedResults.distance <= 2) //distance of car and object 
             {
                 if(speed == "FULL_SPEED")
                     speed == "HALF_SPEED";
@@ -89,7 +96,52 @@ class SelfDrivingCar
                     speed == "STOPPED";
             }
         }
-        //Describe
+        //Per tick update
+        void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY)
+        {
+            int steps=0;
+            if(SPEED == "FULL_SPEED") 
+            {
+                steps=2;   
+            } 
+            else if
+            {
+                SPEED=="HALF_SPEED"
+                steps=1;
+            } 
+            else
+            {
+                steps=0;
+            }
+            //Make decision about movement
+            void executeMovement(pair<Direction, string> nav_system.makeDecision(const Position& car_position))
+            {
+                car_direction = nav_system.makeDecision.moveDir;
+                if(nav_system.makeDecision.action == "DECELERATE")
+                {
+                    Decelerate();
+                }
+                else
+                {
+                    Accelerate();
+                }
+            }
+            // Move one cell at a time up to 'steps' cells
+            for(int i =0; i< steps; ++i) {
+                int nx = POSITION.x + DIRECTION.x;
+                int ny = POSITION.y + DIRECTION.y;
+                //if moved outside of bounds, mark with negative coordinates
+                if(nx < 0 || ny < 0 || nx >= dimX || ny >= dimY) {
+                    POSITION.x = -1;
+                    POSITION.y = -1;
+                    return;
+                } else {
+                    POSITION.x = nx;
+                    POSITION.y = ny;
+                }
+            }
+        }
+        
 };
 
 //GPS targets as arguments from user
