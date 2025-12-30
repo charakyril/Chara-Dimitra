@@ -26,7 +26,7 @@ class NavigationSystem {
             return {};
         }
 
-        void receiveFusedReadings(const vector<SensorReading>& fused) { lastFused = fused; }
+        void collectSensorData(const vector<SensorReading>& fusedResults) { lastFused = fused; }
 
         // Fuse raw sensor data and store fused result
         vector<SensorReading> fuseSensorData(const vector<SensorReading>& raw) {
