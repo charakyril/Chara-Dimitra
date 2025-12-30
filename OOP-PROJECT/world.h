@@ -6,8 +6,8 @@
 #include <iostream>
 #include <string>
 #include "types.h"
-using namespace std;
 
+using namespace std;
 
 //Make Objects class
 class WorldObject 
@@ -55,8 +55,8 @@ class WorldObject
             return TYPE;
         }
 
-       // Per-tick update (default: do nothing).
-    // Moving objects or traffic lights override this to change state each tick.
+        // Per-tick update (default: do nothing).
+        // Moving objects or traffic lights override this to change state each tick.
         virtual void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) {
             // Default implementation: static behaviour
         }
@@ -85,8 +85,20 @@ class MovingObjects : public WorldObject
         //Describe function
         virtual void describe() const = 0;
 
+        //Returns speed of object, used by sensors/ car logic
+        string getSpeed() const
+        {
+            return SPEED;
+        }
+
+        //Returns car direction, used by sensors/car logic
+        Direction getDirection() const 
+        {
+            return car_direction;
+        }
+
         //update position based on speed and direction
-         // Per-tick position update based on speed and direction.
+        // Per-tick position update based on speed and direction.
         // If the object moves outside the world bounds, it is marked "inactive"
         void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override
         {
@@ -113,8 +125,8 @@ class MovingObjects : public WorldObject
                     POSITION.y = ny;
                 }
             }
-        };
-}
+        }
+};
 
 //GENERATIVE CLASSES FOR MOVING OBJECTS//
 
@@ -239,6 +251,13 @@ class TRAFFIC_SIGNS : public StaticObjects
             count--;
             cout << "I just destroyed a static object of type: " << object_type_s << endl;
         }
+
+        //Returns sign text, used by sensors/car logic
+        string getSignText() const
+        {
+            return ID_TEXT;
+        }
+
         void describe() const override
         {
             cout << "Static object is of type: " << object_type_s << endl;
@@ -274,19 +293,25 @@ class TRAFFIC_LIGHTS : public StaticObjects
             cout << "This traffic light has id: " << ID << "and has colour: " << COLOUR << endl;
         }
         // Per-tick update for light colour.
-    // Cycle: RED for 4 ticks, GREEN for 8 ticks, YELLOW for 2 ticks (total 14).
+        // Cycle: RED for 4 ticks, GREEN for 8 ticks, YELLOW for 2 ticks (total 14).
         void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override {
             // full cycle length = 14
             unsigned int cycle = t%14u; //u = unsigned int
-            if(cycle < 4u) {
+            if(cycle < 4u) 
+            {
                 COLOUR = "RED";
-            } else if(cycle < 12u) {
+            } 
+            else if(cycle < 12u)
+            {
                 COLOUR = "GREEN";
-            } else {
+            } 
+            else 
+            {
                 COLOUR = "YELLOW";
             }
 
         }
+        
         // Getter for current colour (used by sensors / car logic)
         string getColour() const {
             return COLOUR;
