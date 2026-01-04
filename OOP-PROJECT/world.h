@@ -1,13 +1,12 @@
-// DONE 
-
+//DONE
 #ifndef WORLD_H
 #define WORLD_H
 
 #include <iostream>
 #include <string>
 #include "types.h"
-
 using namespace std;
+
 
 //Make Objects class
 class WorldObject 
@@ -34,32 +33,15 @@ class WorldObject
         //Virtual describe function for polymorphism
         virtual void describe() const = 0;
 
-        //Accessors
-        Position getPosition() const
-        {
-            return POSITION;
-        }
-        //set position explicitly
-        void setPosition(int x, int y) {
-            POSITION.x=x;
-            POSITION.y=y;
-        }
-        //return id
-        string getID() const {
-            return ID;
-        }
-        char getGlyph() const {
-            return GLYPH;
-        }
-        string getType() const {
-            return TYPE;
-        }
+        // Accessors
+        Position getPosition() const { return POSITION; }
+        void setPosition(int x, int y) { POSITION.x = x; POSITION.y = y; }
+        string getID() const { return ID; }
+        string getType() const { return TYPE; }
+        char getGlyph() const { return GLYPH; }
 
-        // Per-tick update (default: do nothing).
-        // Moving objects or traffic lights override this to change state each tick.
-        virtual void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) {
-            // Default implementation: static behaviour
-        }
+        // Update per tick; default no-op
+        virtual void updateTick(unsigned int /*tick*/, unsigned int /*dimX*/, unsigned int /*dimY*/) {}
 };
 
 //Generative class 1 of Objects//
@@ -85,45 +67,23 @@ class MovingObjects : public WorldObject
         //Describe function
         virtual void describe() const = 0;
 
-        //Returns speed of object, used by sensors/ car logic
-        string getSpeed() const
+        // Update position based on speed and direction
+        void updateTick(unsigned int /*tick*/, unsigned int dimX, unsigned int dimY) override
         {
-            return SPEED;
-        }
+            int steps = 0;
+            if (SPEED == "FULL_SPEED") steps = 2;
+            else if (SPEED == "HALF_SPEED") steps = 1;
+            else steps = 0;
 
-        //Returns car direction, used by sensors/car logic
-        Direction getDirection() const 
-        {
-            return car_direction;
-        }
-
-        //update position based on speed and direction
-        // Per-tick position update based on speed and direction.
-        // If the object moves outside the world bounds, it is marked "inactive"
-        void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override
-        {
-            int steps=0;
-            if(SPEED == "FULL_SPEED") {
-                steps=2;   
-            } else if{
-                SPEED=="HALF_SPEED"
-                steps=1;
-            } else{
-                steps=0;
-            }
-            // Move one cell at a time up to 'steps' cells
-            for(int i =0; i< steps; ++i) {
-                int nx = POSITION.x + DIRECTION.x;
-                int ny = POSITION.y + DIRECTION.y;
-                //if moved outside of bounds, mark with negative coordinates
-                if(nx < 0 || ny < 0 || nx >= dimX || ny >= dimY) {
-                    POSITION.x = -1;
-                    POSITION.y = -1;
+            for (int i = 0; i < steps; ++i) {
+                int nx = POSITION.x + static_cast<int>(DIRECTION.x);
+                int ny = POSITION.y + static_cast<int>(DIRECTION.y);
+                // If moved outside bounds, mark as out-of-bounds with negative coordinates
+                if (nx < 0 || ny < 0 || static_cast<unsigned int>(nx) >= dimX || static_cast<unsigned int>(ny) >= dimY) {
+                    POSITION.x = -1; POSITION.y = -1; // indicate removal
                     return;
-                } else {
-                    POSITION.x = nx;
-                    POSITION.y = ny;
                 }
+                POSITION.x = nx; POSITION.y = ny;
             }
         }
 };
@@ -133,7 +93,6 @@ class MovingObjects : public WorldObject
 class CARS : public MovingObjects
 {
     private:
-        //Local counter used to build IDs (e.g. CAR1, CAR2)
         int count;
     public:
         //Constructor
@@ -251,13 +210,6 @@ class TRAFFIC_SIGNS : public StaticObjects
             count--;
             cout << "I just destroyed a static object of type: " << object_type_s << endl;
         }
-
-        //Returns sign text, used by sensors/car logic
-        string getSignText() const
-        {
-            return ID_TEXT;
-        }
-
         void describe() const override
         {
             cout << "Static object is of type: " << object_type_s << endl;
@@ -292,30 +244,17 @@ class TRAFFIC_LIGHTS : public StaticObjects
             cout << "Static object is of type: " << object_type_s << endl;   
             cout << "This traffic light has id: " << ID << "and has colour: " << COLOUR << endl;
         }
-        // Per-tick update for light colour.
-        // Cycle: RED for 4 ticks, GREEN for 8 ticks, YELLOW for 2 ticks (total 14).
-        void updateTick(unsigned int t, unsigned int dimX, unsigned int dimY) override {
-            // full cycle length = 14
-            unsigned int cycle = t%14u; //u = unsigned int
-            if(cycle < 4u) 
-            {
-                COLOUR = "RED";
-            } 
-            else if(cycle < 12u)
-            {
-                COLOUR = "GREEN";
-            } 
-            else 
-            {
-                COLOUR = "YELLOW";
-            }
 
+        // Update light colour based on tick (RED 4, GREEN 8, YELLOW 2)
+        void updateTick(unsigned int tick, unsigned int /*dimX*/, unsigned int /*dimY*/) override
+        {
+            unsigned int cycle = tick % 14u;
+            if (cycle < 4u) COLOUR = "RED";
+            else if (cycle < 12u) COLOUR = "GREEN";
+            else COLOUR = "YELLOW";
         }
-        
-        // Getter for current colour (used by sensors / car logic)
-        string getColour() const {
-            return COLOUR;
-        }
+
+        string getColour() const { return COLOUR; }
 };
 
 #endif // WORLD_H

@@ -1,4 +1,3 @@
-//DONE
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
@@ -26,7 +25,7 @@ class NavigationSystem {
             return {};
         }
 
-        void collectSensorData(const vector<SensorReading>& fusedResults) { lastFused = fused; }
+        void receiveFusedReadings(const vector<SensorReading>& fused) { lastFused = fused; }
 
         // Fuse raw sensor data and store fused result
         vector<SensorReading> fuseSensorData(const vector<SensorReading>& raw) {
@@ -51,7 +50,7 @@ class NavigationSystem {
             bool decelerate = false;
             for (const auto& r : lastFused) {
                 if (r.distance >= 0 && r.distance <= 2 && (r.type == "CAR" || r.type == "BIKE")) decelerate = true;
-                if (!r.lightColor.empty() && (r.lightColor == "RED" || r.lightColor == "YELLOW") && r.distance >=0 && r.distance <= 3) decelerate = true;
+                if (!r.lightColour.empty() && (r.lightColour == "RED" || r.lightColour == "YELLOW") && r.distance >=0 && r.distance <= 3) decelerate = true;
                 if (r.distance >=0 && abs(tgt.x - myPos.x) + abs(tgt.y - myPos.y) <= 5) decelerate = true; // approaching GPS
             }
             if (decelerate) action = "DECELERATE";
