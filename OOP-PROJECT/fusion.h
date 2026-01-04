@@ -279,22 +279,26 @@ class SensorFusionEngine {
 
         SensorFusionEngine(unsigned int minConf = 40) : minConfidencePercent(minConf) {}
 
-        // Simple fusion: group by objectId; weighted average by confidence; drop low-confidence readings
+        // Main fusion function:
+        // Takes a list of sensor readings, groups them by objectId,
+        // and combines data using confidence-weighted averaging.
         vector<SensorReading> fuseSensorData(const vector<SensorReading>& readings) const
         {
+            // Step 1: Group readings by objectId.
+            // If a reading has no ID, group it under "N/A".
             map<string, vector<SensorReading>> grouped;
             for (const auto& r : readings) {
                 string id = r.objectId;
                 if (id.empty()) id = "N/A"; // group unknowns together
                 grouped[id].push_back(r);
             }
-
+            // Step 2: Process each group to create a fused reading.
             vector<SensorReading> out;
             for (const auto& kv : grouped) {
                 const string& id = kv.first;
                 const auto& group = kv.second;
 
-                // compute confidence-weighted averages
+                // Initialize a fused reading with default values.
                 float wsum = 0.0f;
                 SensorReading fused;
                 fused.objectId = id;
@@ -308,6 +312,7 @@ class SensorFusionEngine {
 
                 // For type and categorical fields we pick the highest-confidence observation
                 float bestTypeConf = -1.0f;
+                // Step 3: Fuse readings within the group.
                 for (const auto& r : group) {
                     float c = r.confidence;
                     if (c > bestTypeConf && !r.type.empty()) {
@@ -324,6 +329,7 @@ class SensorFusionEngine {
                     if (!r.signText.empty() && fused.signText == "N/A") fused.signText = r.signText;
                     if (!r.lightColour.empty() && fused.lightColour == "N/A") fused.lightColour = r.lightColour;
                 }
+                // Step 4: Normalize by total weights to get weighted averages.
                 if (wsum > 0.0f) {
                     fused.position.x = static_cast<int>(fused.position.x / wsum);
                     fused.position.y = static_cast<int>(fused.position.y / wsum);

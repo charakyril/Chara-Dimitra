@@ -1,3 +1,7 @@
+// This class models a simple 2D simulation world where objects can exist,
+// move, and be visualized. It maintains a grid with coordinates (x, y),
+// updates objects over time, and prints the world state for visualization.
+
 #ifndef WORLD_MANAGER_H
 #define WORLD_MANAGER_H
 
@@ -19,6 +23,7 @@ class World
     public:
         vector<WorldObject*> objects; // owning managed externally for simplicity
 
+        // Constructor: creates a world grid with specified dimensions (default 40x40).
         World(unsigned int x = 40, unsigned int y = 40) : dimX(x), dimY(y) {}
         ~World() {
             for (auto p : objects) delete p;
@@ -29,7 +34,10 @@ class World
         unsigned int getDimY() const { return dimY; }
 
         void addObject(WorldObject* obj) { objects.push_back(obj); }
-
+        
+        // Advances the simulation by one tick (time step).
+        // Each object's updateTick() method is called to update its state.
+        // Objects that move outside the world boundaries are removed.
         void updateTick() {
             ++tickCount;
             // update each object
@@ -41,7 +49,7 @@ class World
                 return p == nullptr || p->getPosition().x < 0 || p->getPosition().y < 0;
             }), objects.end());
         }
-
+        // Returns how many ticks (time steps) have passed since simulation start.
         unsigned int getTickCount() const { return tickCount; }
 
         // simple placement helper
@@ -50,7 +58,11 @@ class World
             return true;
         }
 
-        // Visualization: full grid print
+        // Prints the full grid of the world to the console.
+        // Each cell shows:
+        //   '.' for empty cells,
+        //   special glyphs for objects,
+        //   or a custom car symbol ('@' by default) if car position is provided.
         void printFull(char carGlyph='@', const Position* carPos = nullptr) const {
             for (int y = static_cast<int>(dimY)-1; y >= 0; --y) {
                 for (int x = 0; x < static_cast<int>(dimX); ++x) {

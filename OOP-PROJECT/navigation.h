@@ -8,33 +8,46 @@
 #include "fusion.h"
 
 using namespace std;
-
+// The NavigationSystem class controls vehicle navigation by:
+// Managing a list of GPS target positions (waypoints).
+//Fusing sensor data through a SensorFusionEngine.
+// Making driving decisions (direction and speed adjustment)
+// based on sensor readings and current navigation progress.
 class NavigationSystem {
     private:
+    // List of target positions (the route or waypoints)
         vector<Position> targets;
+        // Index of the current target in the list.
         size_t current = 0;
+        // Stores the most recent fused sensor readings.
         vector<SensorReading> lastFused;
+        // The fusion engine used to combine raw sensor inputs.
         SensorFusionEngine fusionEngine;
     public:
         NavigationSystem() : fusionEngine(40) {}
         NavigationSystem(unsigned int minConf) : fusionEngine(minConf) {}
-
+         // Set the navigation route by specifying target positions.
+        // Resets the current target index to the beginning.
         void setTargets(const vector<Position>& t) { targets = t; current = 0; }
         optional<Position> getCurrentTarget() const {
+            // Returns the current navigation target (if available).
             if (current < targets.size()) return targets[current];
             return {};
         }
 
         void receiveFusedReadings(const vector<SensorReading>& fused) { lastFused = fused; }
 
-        // Fuse raw sensor data and store fused result
+        // Fuses raw sensor data using the fusion engine and stores the result.
+        // Returns the fused readings for optional further processing
         vector<SensorReading> fuseSensorData(const vector<SensorReading>& raw) {
             auto fused = fusionEngine.fuseSensorData(raw);
             receiveFusedReadings(fused);
             return fused;
         }
 
-        // Simple decision: return a direction towards current target and recommended action
+       // Core decision-making function:
+        // Determines the next movement direction and recommended action (ACCELERATE/DECELERATE/MAINTAIN)
+        // based on the current position, target, and sensor observations.
         pair<Direction, string> makeDecision(const Position& myPos) {
             Direction moveDir{0,0};
             string action = "MAINTAIN";
