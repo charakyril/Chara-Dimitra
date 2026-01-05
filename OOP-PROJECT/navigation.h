@@ -1,0 +1,85 @@
+#ifndef NAVIGATION_H
+#define NAVIGATION_H
+
+#include <vector>
+#include <optional>
+#include "types.h"
+#include "sensor_reading.h"
+#include "fusion.h"
+
+using namespace std;
+// The NavigationSystem class controls vehicle navigation by:
+// Managing a list of GPS target positions (waypoints).
+//Fusing sensor data through a SensorFusionEngine.
+// Making driving decisions (direction and speed adjustment)
+// based on sensor readings and current navigation progress.
+class NavigationSystem {
+    private:
+    // List of target positions (the route or waypoints)
+        vector<Position> targets;
+        // Index of the current target in the list.
+        size_t current = 0;
+        // Stores the most recent fused sensor readings.
+        vector<SensorReading> lastFused;
+        // The fusion engine used to combine raw sensor inputs.
+        SensorFusionEngine fusionEngine;
+    public:
+        NavigationSystem() : fusionEngine(40) {}
+        NavigationSystem(unsigned int minConf) : fusionEngine(minConf) {}
+         // Set the navigation route by specifying target positions.
+        // Resets the current target index to the beginning.
+        void setTargets(const vector<Position>& t) { targets = t; current = 0; }
+        optional<Position> getCurrentTarget() const {
+            // Returns the current navigation target (if available).
+            if (current < targets.size()) return targets[current];
+            return {};
+        }
+
+        void receiveFusedReadings(const vector<SensorReading>& fused) { lastFused = fused; }
+
+        // Fuses raw sensor data using the fusion engine and stores the result.
+        // Returns the fused readings for optional further processing
+        vector<SensorReading> fuseSensorData(const vector<SensorReading>& raw) {
+            auto fused = fusionEngine.fuseSensorData(raw);
+            receiveFusedReadings(fused);
+            return fused;
+        }
+
+       // Core decision-making function:
+        // Determines the next movement direction and recommended action (ACCELERATE/DECELERATE/MAINTAIN)
+        // based on the current position, target, and sensor observations.
+        pair<Direction, string> makeDecision(const Position& myPos) {
+            Direction moveDir{0,0};
+            string action = "MAINTAIN";
+            auto tgtOpt = getCurrentTarget();
+            if (!tgtOpt.has_value()) return {moveDir, action};
+            Position tgt = *tgtOpt;
+            int dx = tgt.x - myPos.x;
+            int dy = tgt.y - myPos.y;
+            if (dx != 0) moveDir.x = (dx > 0 ? 1 : -1);
+            else if (dy != 0) moveDir.y = (dy > 0 ? 1 : -1);
+
+            // Check for obstacles or signals in fused readings
+            bool decelerate = false;
+            for (const auto& r : lastFused) {
+                if (r.distance >= 0 && r.distance <= 2 && (r.type == "CAR" || r.type == "BIKE")) decelerate = true;
+                if (!r.lightColour.empty() && (r.lightColour == "RED" || r.lightColour == "YELLOW") && r.distance >=0 && r.distance <= 3) decelerate = true;
+                if (r.distance >=0 && abs(tgt.x - myPos.x) + abs(tgt.y - myPos.y) <= 5) decelerate = true; // approaching GPS
+            }
+            if (decelerate) action = "DECELERATE";
+            else action = "ACCELERATE";
+
+            return {moveDir, action};
+        }
+
+        // Move to next target if arrived
+        void checkArrival(const Position& myPos) {
+            if (current >= targets.size()) return;
+            Position tgt = targets[current];
+            if (abs(tgt.x - myPos.x) + abs(tgt.y - myPos.y) == 0) {
+                ++current;
+            }
+        }
+};
+
+#endif // NAVIGATION_H

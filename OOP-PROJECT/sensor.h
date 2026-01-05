@@ -1,4 +1,3 @@
-
 #ifndef SENSOR_H
 #define SENSOR_H
 
@@ -21,20 +20,18 @@ class Sensors
         unsigned int RANGE;
         //visible range
         unsigned int VIS_RANGE;
-        //accuracy of sensor for distance
         int DISTANCE_ACCURACY;
-        //accuracy of sensor for object category
         int CATEGORY_ACCURACY;
+        //Car direction
+        Direction movement_direction;
+        //Object position
+        Position position;
         //Car position
         Position car_position;
-        //Each sensor returns a sensor reading
-        SensorReading sensor_reading;
 
         //Constructor
-        Sensors(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category,
-        Position car_pos)
-        : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), DISTANCE_ACCURACY(dist), CATEGORY_ACCURACY(category),
-        car_position(car_pos)
+        Sensors(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos, Position car_pos)
+        : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), movement_direction(dir), position(pos), car_position(car_pos)
         {
             cout << "I just made a sensor\n";
         }
@@ -55,47 +52,48 @@ class Sensors
 class Lidar : public Sensors
 {
     public:
+        string object_type_detect;
         
         //Constructor
-        Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, 
-        Position car_pos)
-        : Sensors(sens_type, range, vis_range, dist, category, car_pos)
+        Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos, 
+        Position car_pos, const string& detect_object)
+        : Sensors(sens_type, range, vis_range, dir, pos, car_pos), object_type_detect(detect_object)
         {
-            //Initiallizing sensor reading
-            sensor_reading.objectId = WorldObject.getID();
-            sensor_reading.type = WorldObject.getType();
-            sensor_reading.position.x = -1;
-            sensor_reading.position.y = -1;
-            sensor_reading.speed = "N/A";
-            sensor_reading.direction.x = 0.0;
-            sensor_reading.direction.y = 0.0;
-            sensor_reading.signText = "N/A";
-            sensor_reading.lightColour = "N/A";
-            cout << "One working lidar sensor\n"
+            //Every sensor has it's own accuracy
+            DISTANCE_ACCURACY = 99;
+            CATEGORY_ACCURACY = 87;
+            cout << "One working lidar sensor\n";
+            //Find distance
         }
         //Destructor
         ~Lidar() override
         {
             cout << "Lidar sensor stopped operating\n";
         }
-
-        //returns distance
-        void getDistance() const override
+        //Distance from object
+        int distance() const
         {
-            //using getPosition from worldobject
-            Position object_position = WorldObject.getPosition();
-            //Store in sesnor reading
-            sensor_reading.distance = (abs(object_position.x - car_position.x) + abs(object_position.y - car_position.y));
+            return ((abs(position.x - car_position.x) + (abs(position.y - car_position.y))) + 0.05); //noise
         }
-
-        //returns certainty
-        void getConfidence() const override
+        //Distance from gps target
+        int GPS_distance(Position gps_pos) const
         {
-            sensor_reading.confidence = (((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100);
+            return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
         }
-
-        //Sensor Reading of each sensor
-        SensorReading getSensorReading() const override
+        //Returns object category
+        string Object_category() 
+        {
+            return object_type_detect;
+        }
+        //Returns certainty
+        float Confidence()
+        {
+            //Confidence = (akribeia kathe metrhshs / plithos metrhsewn(2)) / 100
+            float sureness = ((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100;
+            return sureness;
+        }
+        //Describe
+        void describe_sensor() const override
         {
             return sensor_reading;
         }
@@ -105,19 +103,17 @@ class Lidar : public Sensors
 class Radar : public Sensors
 {
     public:
-        
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string speed;
+        float sureness;
+    
         //Constructor
-        Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, Position car_pos)
-        : Sensors(sens_type, range, vis_range, dist, category, car_pos) 
+        Radar(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos,  
+        Position car_pos, const string& sp, float sure)
+        : Sensors(sens_type, range, vis_range, dir, pos, car_pos), speed(sp), sureness(sure)
         {
-            //Initiallizing with default arguments the ones that radar does not return
-            sensor_reading.type = WorldObject.getID();
-            sensor_reading.position.x = -1;
-            sensor_reading.position.y = -1;
-            sensor_reading.speed = MovingObjects.getSpeed();
-            sensor_reading.direction = MovingObjects.getDirection();
-            sensor_reading.signText = "N/A";
-            sensor_reading.lightColour = "N/A";
+            DISTANCE_ACCURACY = 95;
+            CATEGORY_ACCURACY = 95;
             cout << "One working radar sensor\n";
         }
         //Destructor
@@ -125,24 +121,25 @@ class Radar : public Sensors
         {
             cout << "Radar sensor stopped operating\n";
         }
-
-        //Returns distance
-        void getDistance() const override
+        //Distance from object
+        int distance() const
         {
-            //Detects only moving objects so, using getPosition from moving objects
-            Position object_position = MovingObjects.getPosition();
-            //store in sesnor reading
-            sensor_reading.distance = (abs(object_position.x - car_position.x) + abs(object_position.y - car_position.y));
+            return (abs(position.x - car_position.x) + (abs(position.y - car_position.y)) + 0.05); //noise
         }
-
+        //Distance from gps target
+        int GPS_distance(Position gps_pos) const
+        {
+            return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
+        }
         //Returns certainty
-        void getConfidence() const override
+        float Confidence()
         {
-            sensor_reading.confidence = (((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100);
+            //Confidence = (akribeia kathe metrhshs / plithos metrhsewn(2)) / 100
+            float sureness = ((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100;
+            return sureness;
         }
-
-        //Sensor Reading of each sensor
-        SensorReading getSensorReading() const override
+        //Describe
+        void describe_sensor() const override
         {
             return sensor_reading;
         }
@@ -152,19 +149,25 @@ class Radar : public Sensors
 class Camera : public Sensors
 {
     public:
+        string object_type_detect;
+        string ObjectID;
+        float sureness;
+        //SPEED = STOPPED, HALF_SPEED, FULL_SPEED
+        string speed;
+        //Signs can be STOP, YIELD etc
+        string SignText;
+        //GREEN, YELLOW, RED    
+        string LightColour;
 
         //Constructor
-        Camera(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, Position car_pos)
-        : Sensors(sens_type, range, vis_range, dist, category, car_pos)
+        Camera(const string& sens_type, unsigned int range, unsigned int vis_range, Direction dir, Position pos,  
+        Position car_pos, const string& detect_object, const string& obj_id, float sure, const string& sp, 
+        const string& signtext, const string& lightcolour)
+        : Sensors(sens_type, range, vis_range, dir, pos, car_pos), object_type_detect(detect_object), ObjectID(obj_id),
+        sureness(sure), speed(sp), SignText(signtext), LightColour(lightcolour)
         {
-            //Store values in sensor reading
-            sensor_reading.position = WorldObject.getPosition();
-            sensor_reading.type = WorldObject.getType();
-            sensor_reading.objectId = WorldObject.getID();
-            sensor_reading.speed = MovingObjects.getSpeed();
-            sensor_reading.direction = MovingObjects.getDirection();
-            sensor_reading.signText = TRAFFIC_SIGNS.getSignText();
-            sensor_reading.lightColour = TRAFFIC_LIGHTS.getColour(); 
+            DISTANCE_ACCURACY = 95;
+            CATEGORY_ACCURACY = 87;
             cout << "One camera sensor working\n";
         } 
         //Destructor
@@ -174,17 +177,21 @@ class Camera : public Sensors
         }
 
         //distance from object
-        void getDistance() const override
+        int distance() const
         {
-            // Manhattan distance; you can add noise if needed
-            Position object_position = WorldObject.getPosition();
-            sensor_reading.distance = (abs(object_position.x - car_position.x) + abs(object_position.y - car_position.y)); //noise + 0,05
+            return (abs(position.x - car_position.x) + (abs(position.y - car_position.y)) + 0.05); //noise
         }
-
-        //Finds certainty
-        void getConfidence() const override
+        //distance from gps target
+        int GPS_distance(Position gps_pos) const
         {
-            sesnor_reading.confidence = (((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100);
+            return (abs(gps_pos.x - car_position.x) + (abs(gps_pos.y - car_position.y)) + 0.05); //noise
+        }
+        //Returns certainty
+        float Confidence()
+        {
+            //Confidence = (akribeia kathe metrhshs / plithos metrhsewn(2)) / 100
+            float sureness = ((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100;
+            return sureness;
         }
 
         //Sensor Reading of each sensor
@@ -195,3 +202,4 @@ class Camera : public Sensors
 };
 
 #endif // SENSOR_H
+
