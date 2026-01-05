@@ -77,29 +77,22 @@ class SelfDrivingCar
         Lidar ld_sensor;      ///< LIDAR sensor - 360-degree object detection
         Radar rd_sensor;      ///< RADAR sensor - front-facing, moving object detection
         Camera cam_sensor;    ///< Camera sensor - visual recognition (signs, lights)
-        
         // Navigation system for GPS-based path planning and decision making
         NavigationSystem nav_system;
     public:
-        
+        //Constructor
         SelfDrivingCar(Direction dir, const string& sp, const Position& pos, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
         : car_direction(dir), speed(sp), position(pos), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
         {
-            cout << "I made the self driving car\n";
             // initialize camera's notion of the car position
             cam_sensor.position = position;
         }
-        
-       
-        ~SelfDrivingCar()
-        {
-            cout << "No self driving car\n";
-        }
+        //Destructor
+        ~SelfDrivingCar() {}
 
-    
+        //Getter function
         const Position& getPosition() const { return position; }
 
-       
         // Collect raw sensor readings from the world
         vector<SensorReading> collectSensorData(const World& world, mt19937_64& rng) {
             vector<SensorReading> out;
@@ -145,8 +138,6 @@ class SelfDrivingCar
             return out;
         }
 
-        
-    
         // sync with navigation system by fusing data
         vector<SensorReading> syncNavigationSystem(NavigationSystem& nav, const vector<SensorReading>& raw) {
             auto fused = nav.fuseSensorData(raw);
@@ -184,15 +175,18 @@ class SelfDrivingCar
             nav_system.checkArrival(position);
             return false;
         }
+        
+        //Getter function
+        NavigationSystem& getNavigation() { return nav_system; }
 
-        void describe() const {
+        //Describe function for visualization
+        void describe() const 
+        {
             cout << "SelfDrivingCar at (" << position.x << "," << position.y << ") speed=" << speed << "\n";
         }
-
-       
-        NavigationSystem& getNavigation() { return nav_system; }
 };
 
+//---------MAIN--------//
 
 //GPS targets as arguments from user
 int main(int argc, char* argv[]) {
@@ -337,17 +331,17 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < numParkedCars; ++i) {
         Position p;
         do { p.x = xdist(rng); p.y = ydist(rng); } while (!world.isCellFree(p.x, p.y));
-        world.addObject(new STAT_VEH('P', "PARKED", p.x, p.y, "PARKED", 0));
+        world.addObject(new STAT_VEH('P', "PARKED", p.x, p.y, "PARKED"));
     }
     for (unsigned int i = 0; i < numStopSigns; ++i) {
         Position p;
         do { p.x = xdist(rng); p.y = ydist(rng); } while (!world.isCellFree(p.x, p.y));
-        world.addObject(new TRAFFIC_SIGNS('S', "SIGN", p.x, p.y, "SIGN", "STOP", 0));
+        world.addObject(new TRAFFIC_SIGNS('S', "SIGN", p.x, p.y, "SIGN", "STOP"));
     }
     for (unsigned int i = 0; i < numTrafficLights; ++i) {
         Position p;
         do { p.x = xdist(rng); p.y = ydist(rng); } while (!world.isCellFree(p.x, p.y));
-        world.addObject(new TRAFFIC_LIGHTS('L', "LIGHT", p.x, p.y, "LIGHT", "RED", 0));
+        world.addObject(new TRAFFIC_LIGHTS('L', "LIGHT", p.x, p.y, "LIGHT", "RED"));
     }
     // moving cars
     vector<Direction> dirs = {{1,0},{-1,0},{0,1},{0,-1}};
@@ -356,18 +350,19 @@ int main(int argc, char* argv[]) {
         Position p;
         do { p.x = xdist(rng); p.y = ydist(rng); } while (!world.isCellFree(p.x, p.y));
         Direction d = dirs[dirDist(rng)];
-        world.addObject(new CARS('C', "CAR", p.x, p.y, "HALF_SPEED", d, "CAR", 0));
+        world.addObject(new CARS('C', "CAR", p.x, p.y, "HALF_SPEED", d, "CAR"));
     }
     for (unsigned int i = 0; i < numMovingBikes; ++i) {
         Position p;
         do { p.x = xdist(rng); p.y = ydist(rng); } while (!world.isCellFree(p.x, p.y));
         Direction d = dirs[dirDist(rng)];
-        world.addObject(new BIKES('B', "BIKE", p.x, p.y, "HALF_SPEED", d, "BIKE", 0));
+        world.addObject(new BIKES('B', "BIKE", p.x, p.y, "HALF_SPEED", d, "BIKE"));
     }
 
     // Simulation loop
     bool outOfBounds = false;
-    for (unsigned int t = 0; t < simulationTicks && !outOfBounds; ++t) {
+    for (unsigned int t = 0; t < simulationTicks && !outOfBounds; ++t) 
+    {
         cout << "\nTick: " << t << "\n";
         world.printAround(car.getPosition(), 4);
         car.describe();

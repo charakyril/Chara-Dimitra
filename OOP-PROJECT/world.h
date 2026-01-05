@@ -7,6 +7,13 @@
 #include "types.h"
 using namespace std;
 
+//MAKE GLOBAL COUNT VARIABLES FOR ID
+//Ορίζονται ως inline για να μην υπάρχουν πολλαπλοί ορισμοί τους
+inline int count_cars = 0;
+inline int count_bikes = 0;
+inline int count_st_v = 0;
+inline int count_traf_signs = 0;
+inline int count_traf_lights = 0;
 
 //Make Objects class
 class WorldObject 
@@ -23,16 +30,11 @@ class WorldObject
         {
             POSITION.x = x;
             POSITION.y = y;
-            cout << "I just made an object\n";
+            
         }
         //Destructor
-        virtual ~WorldObject()
-        {
-            cout << "I just destroyed an object\n";
-        }
-        //Virtual describe function for polymorphism
-        virtual void describe() const = 0;
-
+        virtual ~WorldObject() {}
+        
         // Accessors
         Position getPosition() const { return POSITION; }
         void setPosition(int x, int y) { POSITION.x = x; POSITION.y = y; }
@@ -55,17 +57,12 @@ class MovingObjects : public WorldObject
         string object_type;
     public:
         //Constructor
-        MovingObjects(const char& glyph, const string& type, float x, float y, const string& speed, Direction direction, const string& obj_type)
-        : WorldObject(glyph, type, x, y), SPEED(speed), DIRECTION(direction), object_type(obj_type)
-        {
-            cout << "I just made a moving object of type: " << object_type << endl;
-        }
-        virtual ~MovingObjects()
-        {
-            cout << "I just destroyed a moving object of type: " << object_type << endl;
-        }
-        //Describe function
-        virtual void describe() const = 0;
+        MovingObjects(const char& glyph, const string& type, float x, float y, 
+        const string& speed, Direction direction, const string& obj_type)
+        : WorldObject(glyph, type, x, y), SPEED(speed), DIRECTION(direction), object_type(obj_type) {}
+
+        //Destructor
+        virtual ~MovingObjects() {}
 
         // Update position based on speed and direction
         void updateTick(unsigned int /*tick*/, unsigned int dimX, unsigned int dimY) override
@@ -86,61 +83,49 @@ class MovingObjects : public WorldObject
                 POSITION.x = nx; POSITION.y = ny;
             }
         }
+
+        //Getter function for speed
+        virtual string getSpeed() const = 0;
 };
 
 //GENERATIVE CLASSES FOR MOVING OBJECTS//
 
 class CARS : public MovingObjects
 {
-    private:
-        int count;
     public:
         //Constructor
         CARS(const char& glyph, const string& type, float x, float y,
-        const string& speed, Direction direction, const string& obj_type, int counter)
-        : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
+        const string& speed, Direction direction, const string& obj_type)
+        : MovingObjects(glyph, type, x, y, speed, direction, obj_type)
         {
-            count++;
-            ID = object_type.append(to_string(count));
-            cout << "I just made a moving object of type: " << object_type << endl;
+            count_cars++;
+            ID = object_type.append(to_string(count_cars));
+            cout << " Object id: " << ID << endl;
         }
         //Destructor
-        ~CARS() override
-        {
-            count--;
-            cout << "I just destroyed a moving object of type: " << object_type << endl;
-        }
-        void describe() const override
-        {
-            cout << "Moving object is of type: " << object_type << "and has speed: " << SPEED << endl;
-            cout << "This car has id: " << ID << endl;
-        }
+        ~CARS() override { count_cars--; }
+        
+        //Getter function for speed
+        string getSpeed() const override { return SPEED; }
 };
 
 class BIKES : public MovingObjects
 {
-    private:
-        int count;
     public:
         //Constructor
-        BIKES(const char& glyph, const string& type, float x, float y, const string& speed, Direction direction, const string& obj_type, int counter)
-        : MovingObjects(glyph, type, x, y, speed, direction, obj_type), count(counter)
+        BIKES(const char& glyph, const string& type, float x, float y, 
+        const string& speed, Direction direction, const string& obj_type)
+        : MovingObjects(glyph, type, x, y, speed, direction, obj_type)
         {
-            count++;
-            ID = object_type.append(to_string(count));
-            cout << "I just made a moving object of type: " << object_type << endl;
+            count_bikes++;
+            ID = object_type.append(to_string(count_bikes));
+            cout << " Object id: " << ID << endl;
         }
         //Destructor
-        ~BIKES() override
-        {
-            count--;
-            cout << "I just destroyed a moving object of type: " << object_type << endl;
-        }
-        void describe() const override
-        {
-            cout << "Moving object is of type: " << object_type << "and has speed: " << SPEED << endl;
-            cout << "This bike has id: " << ID << endl;
-        }
+        ~BIKES() override { count_bikes--; }
+
+        //Getter function for speed
+        string getSpeed() const override { return SPEED; }
 };
 
 //Generative class 2 of Objects//
@@ -149,101 +134,67 @@ class StaticObjects : public WorldObject
     protected:
         string object_type_s;
     public:
+        //Constructor
         StaticObjects(const char& glyph, const string& type, float x, float y, const string& obj_type_s)
-        : WorldObject(glyph, type, x, y), object_type_s(obj_type_s)
-        {
-            cout << "I just made a static object of type: " << object_type_s << endl;
-        }
-        virtual ~StaticObjects()
-        {
-            cout << "I just destroyed a static object of type: " << object_type_s <<endl;
-        }
-        //Describe function
-        virtual void describe() const = 0;
-    
+        : WorldObject(glyph, type, x, y), object_type_s(obj_type_s) {}
+        
+        //Destructor
+        virtual ~StaticObjects() {}  
 };
+
 //GENERATIVE CLASSES OF STATIC OBJECTS//
 
 class STAT_VEH : public StaticObjects
 {
-    private:
-        int count;
     public:
         //Constructor
-        STAT_VEH(const char& glyph, const string& type, float x, float y, const string& obj_type_s, int counter)
-        : StaticObjects(glyph, type, x, y, obj_type_s), count(counter)
+        STAT_VEH(const char& glyph, const string& type, float x, float y, const string& obj_type_s)
+        : StaticObjects(glyph, type, x, y, obj_type_s)
         {
-            count++;
-            ID = object_type_s.append(to_string(count));
-            cout << "I just made a static object of type: " << object_type_s << endl;
+            count_st_v++;
+            ID = object_type_s.append(to_string(count_st_v));
+            cout << " Object id: " << ID << endl;
         } 
-        ~STAT_VEH() override
-        {
-            count--;
-            cout << "I just destroyed a static object of type: " << object_type_s << endl;
-        }
-        void describe() const override
-        {
-            cout << "Static object is of type: " << object_type_s << "and is at position: " << POSITION.x << " " << POSITION.y << endl;
-            cout << "This static vehicle has id: " << ID << endl;
-        } 
+        //Destructor
+        ~STAT_VEH() override { count_st_v--; }
 };
 
 class TRAFFIC_SIGNS : public StaticObjects
 {
     private: 
         string ID_TEXT;
-        int count;
     public: 
         //Constructor
         TRAFFIC_SIGNS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, 
-        const string& id_text, int counter)
-        : StaticObjects(glyph, type, x, y, obj_type_s), ID_TEXT(id_text), count(counter)
+        const string& id_text)
+        : StaticObjects(glyph, type, x, y, obj_type_s), ID_TEXT(id_text)
         {
-            count++;
-            ID = object_type_s.append(to_string(count));
-            cout << "I just made a static object of type: " << object_type_s << endl;
+            count_traf_signs++;
+            ID = object_type_s.append(to_string(count_traf_signs));
+            cout << " Object id: " << ID << endl; 
         }
         //Destructor
-        ~TRAFFIC_SIGNS() override
-        {
-            count--;
-            cout << "I just destroyed a static object of type: " << object_type_s << endl;
-        }
-        void describe() const override
-        {
-            cout << "Static object is of type: " << object_type_s << endl;
-            cout << "This traffic sing has id: " << ID << "and is a " << ID_TEXT << " sign" <<  endl;
-        }
+        ~TRAFFIC_SIGNS() override { count_traf_signs--; }
+        
+        //Getter function
+        string getSignText() const { return ID_TEXT; }
 };
 
 class TRAFFIC_LIGHTS : public StaticObjects
 {
     private:
         string COLOUR;
-        int count;
     public:
         //Constructor
-        TRAFFIC_LIGHTS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, 
-        const string& colour, int counter)
-        : StaticObjects(glyph, type, x, y, obj_type_s), COLOUR(colour), count(counter)
+        TRAFFIC_LIGHTS(const char& glyph, const string& type, float x, float y, const string& obj_type_s, const string& colour)
+        : StaticObjects(glyph, type, x, y, obj_type_s), COLOUR(colour)
         {
-            count++;
-            ID = object_type_s.append(to_string(count));
-            cout << "I just made a static object of type: " << object_type_s << endl;
+            count_traf_lights++;
+            ID = object_type_s.append(to_string(count_traf_lights));
+            cout << " Object id: " << ID << endl; 
         }
         //Destructor
-        ~TRAFFIC_LIGHTS() override
-        {
-            count--;
-            cout << "I just destroyed a static object of type: " << object_type_s << endl;
-        }
-        //Describe
-        void describe() const override
-        {
-            cout << "Static object is of type: " << object_type_s << endl;   
-            cout << "This traffic light has id: " << ID << "and has colour: " << COLOUR << endl;
-        }
+        ~TRAFFIC_LIGHTS() override { count_traf_lights--; }
 
         // Update light colour based on tick (RED 4, GREEN 8, YELLOW 2)
         void updateTick(unsigned int tick, unsigned int /*dimX*/, unsigned int /*dimY*/) override
@@ -254,6 +205,7 @@ class TRAFFIC_LIGHTS : public StaticObjects
             else COLOUR = "YELLOW";
         }
 
+        //Getter function
         string getColour() const { return COLOUR; }
 };
 

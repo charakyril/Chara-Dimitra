@@ -25,7 +25,10 @@ class World
 
         // Constructor: creates a world grid with specified dimensions (default 40x40).
         World(unsigned int x = 40, unsigned int y = 40) : dimX(x), dimY(y) {}
-        ~World() {
+        
+        //Destructor
+        ~World() 
+        {
             for (auto p : objects) delete p;
             objects.clear();
         }
@@ -38,14 +41,17 @@ class World
         // Advances the simulation by one tick (time step).
         // Each object's updateTick() method is called to update its state.
         // Objects that move outside the world boundaries are removed.
-        void updateTick() {
+        void updateTick() 
+        {
             ++tickCount;
             // update each object
-            for (auto p : objects) {
+            for (auto p : objects) 
+            {
                 if (p) p->updateTick(tickCount, dimX, dimY);
             }
             // remove out-of-bounds objects (marked with negative pos)
-            objects.erase(remove_if(objects.begin(), objects.end(), [](WorldObject* p){
+            objects.erase(remove_if(objects.begin(), objects.end(), [](WorldObject* p)
+            {
                 return p == nullptr || p->getPosition().x < 0 || p->getPosition().y < 0;
             }), objects.end());
         }
@@ -81,17 +87,21 @@ class World
         }
 
         // Print a square centered around the car
-        void printAround(const Position& pos, unsigned int radius=3, char carGlyph='@') const {
+        void printAround(const Position& pos, unsigned int radius=3, char carGlyph='@') const 
+        {
             int minx = max(0, pos.x - static_cast<int>(radius));
             int maxx = min(static_cast<int>(dimX)-1, pos.x + static_cast<int>(radius));
             int miny = max(0, pos.y - static_cast<int>(radius));
             int maxy = min(static_cast<int>(dimY)-1, pos.y + static_cast<int>(radius));
 
-            for (int y = maxy; y >= miny; --y) {
-                for (int x = minx; x <= maxx; ++x) {
+            for (int y = maxy; y >= miny; --y) 
+            {
+                for (int x = minx; x <= maxx; ++x) 
+                {
                     if (pos.x == x && pos.y == y) { cout << carGlyph; continue; }
                     char out = '.';
-                    for (auto p : objects) {
+                    for (auto p : objects) 
+                    {
                         if (p->getPosition().x == x && p->getPosition().y == y) { out = p->getGlyph(); break; }
                     }
                     cout << out;

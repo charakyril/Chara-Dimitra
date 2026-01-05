@@ -1,26 +1,15 @@
-<<<<<<< HEAD
-#ifndef FUSION_H
-=======
 /*fndef FUSION_H
->>>>>>> 496eac29d6f23ada34ec9f396be0545ffb95886a
 #define FUSION_H
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
-<<<<<<< HEAD
-#include <algorithm>
-#include "sensor_reading.h"
-#include "sensor.h"
-#include "types.h"
-=======
 #include <string>
 #include <algorithm>
 #include "sensor_reading.h"
 //include "sensor.h"
 //nclude "types.h"
->>>>>>> 496eac29d6f23ada34ec9f396be0545ffb95886a
 
 using namespace std;
 
@@ -271,9 +260,6 @@ class SensorFusionEngine
         }
 };
 
-<<<<<<< HEAD
-#endif //FUSION_H
-=======
 #endif // FUSION_H */
 
 #ifndef FUSION_H
@@ -364,4 +350,3 @@ class SensorFusionEngine {
 };
 
 #endif // FUSION_H
->>>>>>> 496eac29d6f23ada34ec9f396be0545ffb95886a
