@@ -84,11 +84,17 @@ class SelfDrivingCar
         SelfDrivingCar(Direction dir, const string& sp, const Position& pos, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
         : car_direction(dir), speed(sp), position(pos), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
         {
+            cout << "Initialized at ("<< position.x <<")" << "," << "("<< position.y <<")" 
+            << " facing ("<< car_direction.x <<")" << "," << "("<< car_direction.y <<")" 
+            << "- No driver's license required!" << endl;
             // initialize camera's notion of the car position
             cam_sensor.position = position;
         }
         //Destructor
-        ~SelfDrivingCar() {}
+        ~SelfDrivingCar() 
+        {
+            cout << "Our journey is complete!" << endl;
+        }
 
         //Getter function
         const Position& getPosition() const { return position; }

@@ -19,7 +19,7 @@ class Sensors
         string SENS_TYPE;
         //maximum detection range
         unsigned int RANGE;
-        //visible range
+        //optiko pedio
         unsigned int VIS_RANGE;
         //accuracy of sensor for distance
         int DISTANCE_ACCURACY;
@@ -27,26 +27,29 @@ class Sensors
         int CATEGORY_ACCURACY;
         //Car position
         Position car_position;
+        //Car direction
+        Direction car_direction;
         //Each sensor returns a sensor reading
         SensorReading sensor_reading;
 
         //Constructor
         Sensors(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category,
-        Position car_pos)
+        Position car_pos, Direction car_dir)
         : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), DISTANCE_ACCURACY(dist), CATEGORY_ACCURACY(category),
-        car_position(car_pos)
-        {
-            cout << "I just made a sensor\n";
-        }
+        car_position(car_pos), car_direction(car_dir) {}
+
         //Destructor
-        virtual ~Sensors()
+        virtual ~Sensors() 
         {
-            cout << "I just destroyed a sensor\n";
+            //cout << "Sensor destroyed. No further data from me!" << endl;
         }
+
         //Pure virtual getDistance
         virtual void getDistance() const = 0;
+        
         //Pure virtual getConfidence
         virtual void getConfidence() const = 0;
+        
         //Pure virtual getSensorReading
         virtual SensorReading getSensorReading() const = 0;
 };
@@ -58,9 +61,10 @@ class Lidar : public Sensors
         
         //Constructor
         Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, 
-        Position car_pos)
-        : Sensors(sens_type, range, vis_range, dist, category, car_pos)
+        Position car_pos, Direction car_dir)
+        : Sensors(sens_type, range, vis_range, dist, category, car_pos, car_dir)
         {
+            //cout << "Lidar sensor ready – Sensing with pew pews!" << endl;
             //Initiallizing sensor reading
             sensor_reading.objectId = WorldObject.getID();
             sensor_reading.type = WorldObject.getType();
@@ -71,15 +75,11 @@ class Lidar : public Sensors
             sensor_reading.direction.y = 0.0;
             sensor_reading.signText = "N/A";
             sensor_reading.lightColour = "N/A";
-            cout << "One working lidar sensor\n"
         }
         //Destructor
-        ~Lidar() override
-        {
-            cout << "Lidar sensor stopped operating\n";
-        }
+        ~Lidar() override {}
 
-        //returns distance
+        //Returns distance
         void getDistance() const override
         {
             //using getPosition from worldobject
@@ -88,7 +88,7 @@ class Lidar : public Sensors
             sensor_reading.distance = (abs(object_position.x - car_position.x) + abs(object_position.y - car_position.y));
         }
 
-        //returns certainty
+        //Returns certainty
         void getConfidence() const override
         {
             sensor_reading.confidence = (((DISTANCE_ACCURACY + CATEGORY_ACCURACY)/2)/100);
@@ -107,9 +107,11 @@ class Radar : public Sensors
     public:
         
         //Constructor
-        Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, Position car_pos)
-        : Sensors(sens_type, range, vis_range, dist, category, car_pos) 
+        Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category,
+        Position car_pos, Direction car_dir)
+        : Sensors(sens_type, range, vis_range, dist, category, car_pos, car_dir) 
         {
+            //cout << "Radar sensor ready - I'm a Radio star!" << endl;
             //Initiallizing with default arguments the ones that radar does not return
             sensor_reading.type = WorldObject.getID();
             sensor_reading.position.x = -1;
@@ -118,13 +120,9 @@ class Radar : public Sensors
             sensor_reading.direction = MovingObjects.getDirection();
             sensor_reading.signText = "N/A";
             sensor_reading.lightColour = "N/A";
-            cout << "One working radar sensor\n";
         }
         //Destructor
-        ~Radar() override
-        {
-            cout << "Radar sensor stopped operating\n";
-        }
+        ~Radar() override {}
 
         //Returns distance
         void getDistance() const override
@@ -154,9 +152,11 @@ class Camera : public Sensors
     public:
 
         //Constructor
-        Camera(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, Position car_pos)
-        : Sensors(sens_type, range, vis_range, dist, category, car_pos)
+        Camera(const string& sens_type, unsigned int range, unsigned int vis_range, int dist, int category, 
+        Position car_pos, Direction car_dir)
+        : Sensors(sens_type, range, vis_range, dist, category, car_pos, car_dir)
         {
+            //cout << "Camera sensor ready - Say cheese!" << endl;
             //Store values in sensor reading
             sensor_reading.position = WorldObject.getPosition();
             sensor_reading.type = WorldObject.getType();
@@ -165,15 +165,11 @@ class Camera : public Sensors
             sensor_reading.direction = MovingObjects.getDirection();
             sensor_reading.signText = TRAFFIC_SIGNS.getSignText();
             sensor_reading.lightColour = TRAFFIC_LIGHTS.getColour(); 
-            cout << "One camera sensor working\n";
         } 
         //Destructor
-        ~Camera() override
-        {
-            cout << "Camera sensor stopped working\n";
-        }
+        ~Camera() override {}
 
-        //distance from object
+        //Distance from object
         void getDistance() const override
         {
             // Manhattan distance; you can add noise if needed
@@ -222,7 +218,10 @@ class Sensors
         : SENS_TYPE(sens_type), RANGE(range), VIS_RANGE(vis_range), ACCURACY(accuracy) {}
 
         //Destructor
-        virtual ~Sensors() {}
+        virtual ~Sensors() 
+        {
+            //cout << "Sensor destroyed. No further data from me!" << endl;
+        }
 };
 
 //----SENSOR LIDAR----//
@@ -236,7 +235,10 @@ class Lidar : public Sensors
         //Constructor
         Lidar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
         float dist, const string& detect_object, float sure)
-        : Sensors(sens_type, range, vis_range, accuracy), distance(dist), object_type_detect(detect_object), sureness(sure) {}
+        : Sensors(sens_type, range, vis_range, accuracy), distance(dist), object_type_detect(detect_object), sureness(sure) 
+        {
+            //cout << "Lidar sensor ready - Sensing with pew pews!" << endl;
+        }
 
         //Destructor
         ~Lidar() override {}
@@ -255,7 +257,10 @@ class Radar : public Sensors
         //Constructor
         Radar(const string& sens_type, unsigned int range, unsigned int vis_range, int accuracy,
         float dist, const string& sp, Direction dir, float sure)
-        : Sensors(sens_type, range, vis_range, accuracy), distance(dist), speed(sp), movement_direction(dir), sureness(sure) {}
+        : Sensors(sens_type, range, vis_range, accuracy), distance(dist), speed(sp), movement_direction(dir), sureness(sure) 
+        {
+            //cout << "Radar sensor ready - I'm a Radio star!" << endl;
+        }
 
         //Destructor
         ~Radar() override {}
@@ -284,7 +289,10 @@ class Camera : public Sensors
         const string& detect_object, Position pos, const string& obj_id, float sure, const string& sp,
         Direction dir, const string& signtext, const string& lightcolour)
         : Sensors(sens_type, range, vis_range, accuracy), object_type_detect(detect_object),position(pos), ObjectID(obj_id),
-        sureness(sure), speed(sp), movement_direction(dir), SignText(signtext), LightColour(lightcolour) {}
+        sureness(sure), speed(sp), movement_direction(dir), SignText(signtext), LightColour(lightcolour) 
+        {
+            //cout << "Camera sensor ready - Say cheese!" << endl;
+        }
 
         //Destructor
         ~Camera() override {}

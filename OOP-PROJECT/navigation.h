@@ -24,8 +24,21 @@ class NavigationSystem {
         // The fusion engine used to combine raw sensor inputs.
         SensorFusionEngine fusionEngine;
     public:
-        NavigationSystem() : fusionEngine(40) {}
-        NavigationSystem(unsigned int minConf) : fusionEngine(minConf) {}
+        //Constructor
+        NavigationSystem() : fusionEngine(40) 
+        {
+            cout << "Hello, I'll be your GPS today" << endl;
+        }
+        //Constructor
+        NavigationSystem(unsigned int minConf) : fusionEngine(minConf) 
+        {
+            cout << "Hello, I'll be your GPS today" << endl;
+        }
+        //Destructor
+        /*~NavigationSystem()
+        {
+            //cout << "You've arrived! Shutting down..." << endl;
+        }*/
          // Set the navigation route by specifying target positions.
         // Resets the current target index to the beginning.
         void setTargets(const vector<Position>& t) { targets = t; current = 0; }

@@ -24,13 +24,17 @@ class World
         vector<WorldObject*> objects; // owning managed externally for simplicity
 
         // Constructor: creates a world grid with specified dimensions (default 40x40).
-        World(unsigned int x = 40, unsigned int y = 40) : dimX(x), dimY(y) {}
+        World(unsigned int x = 40, unsigned int y = 40) : dimX(x), dimY(y) 
+        {
+            cout << "Reticulating splines! Hello , world!" << endl;
+        }
         
         //Destructor
         ~World() 
         {
             for (auto p : objects) delete p;
             objects.clear();
+            cout << "Goodbye ,cruel world!" << endl;
         }
 
         unsigned int getDimX() const { return dimX; }

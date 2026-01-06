@@ -29,8 +29,7 @@ class WorldObject
         : GLYPH(glyph), TYPE(type)
         {
             POSITION.x = x;
-            POSITION.y = y;
-            
+            POSITION.y = y;  
         }
         //Destructor
         virtual ~WorldObject() {}
@@ -59,7 +58,12 @@ class MovingObjects : public WorldObject
         //Constructor
         MovingObjects(const char& glyph, const string& type, float x, float y, 
         const string& speed, Direction direction, const string& obj_type)
-        : WorldObject(glyph, type, x, y), SPEED(speed), DIRECTION(direction), object_type(obj_type) {}
+        : WorldObject(glyph, type, x, y), SPEED(speed), DIRECTION(direction), object_type(obj_type) 
+        {
+            cout << "Created at (" << POSITION.x << ")" << "," <<"(" << POSITION.y << ")" 
+            << " heading (" << DIRECTION.x << ")" << "," << "("<< DIRECTION.y <<")"
+            << " at (" << SPEED << ") units/tick" << endl;
+        }
 
         //Destructor
         virtual ~MovingObjects() {}
@@ -100,10 +104,14 @@ class CARS : public MovingObjects
         {
             count_cars++;
             ID = object_type.append(to_string(count_cars));
-            cout << " Object id: " << ID << endl;
+            cout << "Object has id: " << ID << endl;
         }
         //Destructor
-        ~CARS() override { count_cars--; }
+        ~CARS() override 
+        { 
+            count_cars--;
+            //cout << "Being scrapped..." << endl;
+        }
         
         //Getter function for speed
         string getSpeed() const override { return SPEED; }
@@ -119,10 +127,14 @@ class BIKES : public MovingObjects
         {
             count_bikes++;
             ID = object_type.append(to_string(count_bikes));
-            cout << " Object id: " << ID << endl;
+            cout << "Object has id: " << ID << endl;
         }
         //Destructor
-        ~BIKES() override { count_bikes--; }
+        ~BIKES() override 
+        { 
+            count_bikes--; 
+            //cout << "Being locked away..." << endl;
+        }
 
         //Getter function for speed
         string getSpeed() const override { return SPEED; }
@@ -151,12 +163,17 @@ class STAT_VEH : public StaticObjects
         STAT_VEH(const char& glyph, const string& type, float x, float y, const string& obj_type_s)
         : StaticObjects(glyph, type, x, y, obj_type_s)
         {
-            count_st_v++;
             ID = object_type_s.append(to_string(count_st_v));
-            cout << " Object id: " << ID << endl;
+            cout << ID << " is parked at (" << POSITION.x << ")" << "," <<" (" << POSITION.y <<")" << endl;
+            count_st_v++;
+            //cout << "Object id: " << ID << endl;
         } 
         //Destructor
-        ~STAT_VEH() override { count_st_v--; }
+        ~STAT_VEH() override 
+        { 
+            count_st_v--;
+            //cout << "I'm being towed away!" << endl;
+        }
 };
 
 class TRAFFIC_SIGNS : public StaticObjects
@@ -171,7 +188,7 @@ class TRAFFIC_SIGNS : public StaticObjects
         {
             count_traf_signs++;
             ID = object_type_s.append(to_string(count_traf_signs));
-            cout << " Object id: " << ID << endl; 
+            //cout << " Object id: " << ID << endl; 
         }
         //Destructor
         ~TRAFFIC_SIGNS() override { count_traf_signs--; }
@@ -191,10 +208,16 @@ class TRAFFIC_LIGHTS : public StaticObjects
         {
             count_traf_lights++;
             ID = object_type_s.append(to_string(count_traf_lights));
-            cout << " Object id: " << ID << endl; 
+            cout << ID << " is initialized at ("<< POSITION.x << ")" << "," << "("<< POSITION.y <<")" 
+            << " to ("<< COLOUR <<")" << endl;
+            //cout << "Object id: " << ID << endl; 
         }
         //Destructor
-        ~TRAFFIC_LIGHTS() override { count_traf_lights--; }
+        ~TRAFFIC_LIGHTS() override 
+        { 
+            count_traf_lights--; 
+            //cout << "Turning off" << endl;
+        }
 
         // Update light colour based on tick (RED 4, GREEN 8, YELLOW 2)
         void updateTick(unsigned int tick, unsigned int /*dimX*/, unsigned int /*dimY*/) override
