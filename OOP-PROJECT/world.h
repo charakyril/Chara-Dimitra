@@ -124,7 +124,7 @@ class CARS : public MovingObjects
             else if (direction.y == 1) dirStr = "NORTH";
             else dirStr = "SOUTH";
             
-            cout << "[+CAR:" << ID << "] Initialized at (" << x << "," << y << ") facing " 
+            cout << "[+" << ID << "] Initialized at (" << x << "," << y << ") facing " 
                  << dirStr << " - No driver's license required!" << endl;
         }
         //Destructor
@@ -132,7 +132,7 @@ class CARS : public MovingObjects
         { 
            // count_cars--;
             //cout << "Being scrapped..." << endl;
-            cout << "[-CAR:" << ID << "] Our journey is complete!" << endl;
+            cout << "[-" << ID << "] Our journey is complete!" << endl;
         }
         void describe() const override
         {
@@ -155,13 +155,13 @@ class BIKES : public MovingObjects
             //count_bikes++;
             //ID = object_type.append(to_string(count_bikes));
             //cout << "Object has id: " << ID << endl;
-            cout << "[+BIKE:" << ID << "] Initialized at (" << x << "," << y << ")" << endl;
+            cout << "[+" << ID << "] Initialized at (" << x << "," << y << ")" << endl;
         }
         //Destructor
         ~BIKES() override 
         { 
            // count_bikes--; 
-            cout << "[-BIKE:" << ID << "] Being locked away ..." << endl;
+            cout << "[-" << ID << "] Being locked away ..." << endl;
         }
         void describe() const override
         {
@@ -200,13 +200,13 @@ class STAT_VEH : public StaticObjects
             //cout << ID << " is parked at (" << POSITION.x << ")" << "," <<" (" << POSITION.y <<")" << endl;
             //count_st_v++;
             //cout << "Object id: " << ID << endl;
-            cout << "[+PARKED:" << ID << "] Parked at (" << x << "," << y << ")" << endl;
+            cout << "[+" << ID << "] Parked at (" << x << "," << y << ")" << endl;
         } 
         //Destructor
         ~STAT_VEH() override 
         { 
             //count_st_v--;
-            cout << "[-PARKED:" << ID << "] I'm being towed away!" << endl;
+            cout << "[-" << ID << "] I'm being towed away!" << endl;
             //cout << "I'm being towed away!" << endl;
         }
         void describe() const override
@@ -229,12 +229,12 @@ class TRAFFIC_SIGNS : public StaticObjects
             //count_traf_signs++;
             //ID = object_type_s.append(to_string(count_traf_signs));
             //cout << " Object id: " << ID << endl;
-            cout << "[+SIGN:" << ID << "] Initialized at (" << x << "," << y << ") as " << id_text << endl; 
+            cout << "[+" << ID << "] Initialized at (" << x << "," << y << ") as " << id_text << endl; 
         }
         //Destructor
         ~TRAFFIC_SIGNS() override { 
             //count_traf_signs--;
-            cout << "[-SIGN:" << ID << "] Being removed" << endl; 
+            cout << "[-" << ID << "] Being removed" << endl; 
         }
 
          void describe() const override
@@ -273,12 +273,12 @@ class TRAFFIC_LIGHTS : public StaticObjects
                 else COLOUR = "YELLOW";
             }
             
-            cout << "[+LIGHT:" << ID << "] Initialized at (" << x << "," << y << ") to " << COLOUR << endl;
+            cout << "[+" << ID << "] Initialized at (" << x << "," << y << ") to " << COLOUR << endl;
         }
         //Destructor
         ~TRAFFIC_LIGHTS() override
         {
-            cout << "[-LIGHT:" << ID << "] Turning off" << endl;
+            cout << "[-" << ID << "] Turning off" << endl;
         }
         //Describe
         void describe() const override

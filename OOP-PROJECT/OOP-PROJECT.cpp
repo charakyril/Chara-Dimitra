@@ -70,7 +70,7 @@ class SelfDrivingCar
         //Destructor
         ~SelfDrivingCar() 
         {
-            cout << "Our journey is complete!" << endl;
+            cout << "Our journey is complete! Goodbye :)" << endl;
         }
 
         //Getter function
@@ -462,6 +462,8 @@ int main(int argc, char* argv[]) {
         // Stop simulation if all targets have been reached
         if (!nav.getCurrentTarget().has_value()) {
             cout << "\n*** All targets reached! Stopping simulation. ***" << endl;
+            cout << "\n=== Final World State ===" << endl;
+            world.printFull('@', &car.getPosition());
             return 0;
         }
 
@@ -473,13 +475,13 @@ int main(int argc, char* argv[]) {
         // Advance world a second time so moving objects and lights step after car
         world.updateTick();
 
-        cout << "\n=== Final World State ===" << endl;
-        world.printFull('@', &car.getPosition());
+        
     }
 
     if (outOfBounds) cout << "Self-driving car attempted to leave the world. Simulation ended.\n";
 
-    
+    cout << "\n=== Final World State ===" << endl;
+    world.printFull('@', &car.getPosition());
 
     return 0;
 }
