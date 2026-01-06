@@ -1,15 +1,14 @@
-/*fndef FUSION_H
+#ifndef FUSION_H
 #define FUSION_H
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
-#include <string>
 #include <algorithm>
 #include "sensor_reading.h"
-//include "sensor.h"
-//nclude "types.h"
+#include "sensor.h"
+#include "types.h"
 
 using namespace std;
 
@@ -17,7 +16,7 @@ class SensorFusionEngine
 {
     private:
         //Value that checks for very low certainty
-        double minConfidenceTreshold;
+        double minConfidenceThreshold;
 
         // Υπολογισμός σταθμισμένου μέσου όρου
         double weightedAverage(const vector<double>& values, const vector<double>& weights) 
@@ -103,7 +102,7 @@ class SensorFusionEngine
             if (allReadings.size() == 1) 
             {
                 vector<SensorReading> result;
-                if (allReadings[0].confidence >= minConfidenceThreshold || allReadings[0].type == "BIKE") 
+                if (allReadings[0].confidence >= minConfidenceThreshold || allReadings[0].type == "BIKE")
                 {
                     result.push_back(allReadings[0]);
                 }
@@ -128,7 +127,7 @@ class SensorFusionEngine
                 {
                     const auto& r = readings[0];
                     // Έλεγχος κατωφλίου
-                    if (r.confidence >= minConfidenceThreshold || r.type == "BIKE") 
+                    if (r.confidence >= minConfidenceThreshold || r.type == "BIKE")
                     {
                         fusedResults.push_back(r);
                     }
@@ -250,7 +249,7 @@ class SensorFusionEngine
                 // ΕΞΑΙΡΕΣΗ: Ποδήλατα ΔΕΝ απορρίπτονται (ασφάλεια)
                 bool isBicycle = containsBicycle(readings);
                 
-                if (fusedReading.confidence >= minConfidenceThreshold || isBicycle) 
+                if (fusedReading.confidence >= minConfidenceThreshold || isBicycle)
                 {
                     fusedResults.push_back(fusedReading);
                 }
@@ -260,9 +259,9 @@ class SensorFusionEngine
         }
 };
 
-#endif // FUSION_H */
+#endif // FUSION_H 
 
-#ifndef FUSION_H
+/*#ifndef FUSION_H
 #define FUSION_H
 
 #include <vector>
@@ -349,4 +348,4 @@ class SensorFusionEngine {
         }
 };
 
-#endif // FUSION_H
+#endif // FUSION_H */

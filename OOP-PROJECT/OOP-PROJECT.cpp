@@ -21,35 +21,6 @@ unsigned int ticks = 0;
 /// This is used by the navigation system to determine movement direction
 Position gps_pos;
 
-/*void printHelp ()
-{
-    cout << "Self −Driving Car Simulation" << endl;
-    cout << "Usage: " << endl;
-    cout << " −−seed <n>
-    Random seed ( default : current time)" << endl;
-    cout << " −−dimX <n>
-    cout << " −−dimY <n>
-    cout << " −−numMovingCars <n>
-    cout << " −−numMovingBikes <n>
-    cout << " −−numParkedCars <n>
-    cout << " −−numStopSigns <n>
-    cout << " −−numTrafficLights <n>
-    cout << " −−simulationTicks <n>
-    World width ( default : 40)" << endl;
-    World height ( default : 40)" << endl;
-    Number of moving cars ( default : 3)" << endl;
-    Number of moving bikes ( default : 4)" << endl;
-    Number of parked cars ( default : 5)" << endl;
-    Number of stop signs (default : 2)" << endl;
-    Number of traffic lights ( default : 2)" << endl;
-    Maximum simulation ticks ( default : 100)" << endl;
-    cout << " −−minConfidenceThreshold <n> Minimum confidence cutoff ( default : 40)" << endl;
-    cout << " −−gps <x1> <y1> [x2 y2 . . .] GPS target coordinates (required)" << endl;
-    cout << " −−help
-    Show this help message" << endl << endl;
-    cout << "Example usage: " << endl;
-    cout << " ./ oopproj_2025 −−seed 12 −−dimY 50 −−gps 10 20 32 15" << endl;
-}*/
 
 // Shared types (Position, Direction) are defined in types.h
 
@@ -84,9 +55,15 @@ class SelfDrivingCar
         SelfDrivingCar(Direction dir, const string& sp, const Position& pos, Lidar lidar, Radar radar, Camera camera, NavigationSystem nav)
         : car_direction(dir), speed(sp), position(pos), ld_sensor(lidar), rd_sensor(radar), cam_sensor(camera), nav_system(nav)
         {
+            // Convert direction to string for display
+            string dirStr;
+            if (dir.x == 1) dirStr = "EAST";
+            else if (dir.x == -1) dirStr = "WEST";
+            else if (dir.y == 1) dirStr = "NORTH";
+            else dirStr = "SOUTH";
+            
             cout << "Initialized at ("<< position.x <<")" << "," << "("<< position.y <<")" 
-            << " facing ("<< car_direction.x <<")" << "," << "("<< car_direction.y <<")" 
-            << "- No driver's license required!" << endl;
+            << " facing " << dirStr << " - No driver's license required!" << endl;
             // initialize camera's notion of the car position
             cam_sensor.position = position;
         }
@@ -165,25 +142,47 @@ class SelfDrivingCar
             int steps = 0;
             if (speed == "FULL_SPEED") steps = 2;
             else if (speed == "HALF_SPEED") steps = 1;
+            else steps = 0; // STOPPED
 
-            for (int i = 0; i < steps; ++i) {
-                int nx = position.x + static_cast<int>(dir.x);
-                int ny = position.y + static_cast<int>(dir.y);
-                if (nx < 0 || ny < 0 || static_cast<unsigned int>(nx) >= world.getDimX() || static_cast<unsigned int>(ny) >= world.getDimY()) {
-                    // attempted to go out of bounds
-                    return true;
+             if (steps > 0) {
+                // Determine actual number of steps (clamp to avoid overshooting target)
+                int maxSteps = steps;
+                auto tgtOpt = nav_system.getCurrentTarget();
+                
+                if (tgtOpt.has_value() && (dir.x != 0 || dir.y != 0)) {
+                    Position tgt = *tgtOpt;
+                    // Calculate steps needed in each direction
+                    if (dir.x != 0) {
+                        int stepsToTargetX = abs(tgt.x - position.x);
+                        if (steps > stepsToTargetX) maxSteps = stepsToTargetX;
+                    }
+                    if (dir.y != 0) {
+                        int stepsToTargetY = abs(tgt.y - position.y);
+                        if (steps > stepsToTargetY) maxSteps = stepsToTargetY;
+                    }
                 }
-                position.x = nx; position.y = ny;
+                
+                for (int i = 0; i < maxSteps; ++i) {
+                    int nx = position.x + static_cast<int>(dir.x);
+                    int ny = position.y + static_cast<int>(dir.y);
+                    if (nx < 0 || ny < 0 || static_cast<unsigned int>(nx) >= world.getDimX() || static_cast<unsigned int>(ny) >= world.getDimY()) {
+                        // attempted to go out of bounds
+                        return true;
+                    }
+                    position.x = nx; position.y = ny;
+                }
+
+                // update camera position
+                cam_sensor.position = position;
+           
             }
-            // update camera position
-            cam_sensor.position = position;
             // inform nav system about arrival check
             nav_system.checkArrival(position);
             return false;
-        }
-        
+        };
         //Getter function
         NavigationSystem& getNavigation() { return nav_system; }
+        string getSpeed() const { return speed; }
 
         //Describe function for visualization
         void describe() const 
@@ -314,24 +313,36 @@ int main(int argc, char* argv[]) {
 
     // Build world and place objects
     World world(dimX, dimY);
-
-    // pick a random position for the self-driving car that is free
+    
+    // pick a random position for the self-driving car using the seed
     uniform_int_distribution<int> xdist(0, dimX-1);
     uniform_int_distribution<int> ydist(0, dimY-1);
     Position carPos;
-    do {
-        carPos.x = xdist(rng); carPos.y = ydist(rng);
-    } while (!world.isCellFree(carPos.x, carPos.y));
+    carPos.x = xdist(rng);
+    carPos.y = ydist(rng);
 
+    // pick a random direction for the self-driving car
+    vector<Direction> carDirs = {{1,0},{-1,0},{0,1},{0,-1}};
+    uniform_int_distribution<int> carDirDist(0, 3);
+    Direction carDir = carDirs[carDirDist(rng)];
+    
+    // Convert direction to string for display
+    string dirStr;
+    if (carDir.x == 1) dirStr = "EAST";
+    else if (carDir.x == -1) dirStr = "WEST";
+    else if (carDir.y == 1) dirStr = "NORTH";
+    else dirStr = "SOUTH";
+    
+    
     // Create sensors and navigation
-    Lidar lidar("LIDAR", 9, 9, 87, 0.0f, "N/A", 0.99f);
-    Radar radar("RADAR", 12, 12, 95, 0.0f, "STOPPED", Direction{0,1}, 0.99f);
-    Camera camera("CAM", 7, 7, 95, "N/A", carPos, "N/A", 0.95f, "STOPPED", Direction{0,1}, "N/A", "GREEN");
+    Lidar lidar("LIDAR", 9, 9, 87, 0, carPos, 0.99f);
+    Radar radar("RADAR", 12, 12, 95, 0, carPos, Direction{0,1}, 0.99f);
+    Camera camera("CAM", 7, 7, 95, 0, carPos, "N/A", 0.95f, "STOPPED", Direction{0,1}, "N/A", "GREEN");
 
     NavigationSystem nav(minConfidenceThreshold);
     nav.setTargets(gpsTargets);
 
-    SelfDrivingCar car(Direction{0,1}, "STOPPED", carPos, lidar, radar, camera, nav);
+    SelfDrivingCar car(carDir, "STOPPED", carPos, lidar, radar, camera, nav);
 
     // populate world with parked cars, signs, lights, moving vehicles
     for (unsigned int i = 0; i < numParkedCars; ++i) {
@@ -365,39 +376,110 @@ int main(int argc, char* argv[]) {
         world.addObject(new BIKES('B', "BIKE", p.x, p.y, "HALF_SPEED", d, "BIKE"));
     }
 
+    // Print initial world state
+    cout << "\n=== Initial World State ===" << endl;
+    world.printFull('@', &carPos);
+    
     // Simulation loop
     bool outOfBounds = false;
-    for (unsigned int t = 0; t < simulationTicks && !outOfBounds; ++t) 
-    {
-        cout << "\nTick: " << t << "\n";
-        world.printAround(car.getPosition(), 4);
-        car.describe();
+    Direction prevDir = Direction{0, 1}; // Default initial direction (facing NORTH)
+    for (unsigned int t = 1; t <= simulationTicks && !outOfBounds; ++t) {
+        // Check arrival BEFORE decision making so new target is used for next decision
+        nav.checkArrivalBeforeTick(car.getPosition());
 
-        // update world objects (moving vehicles, lights etc.)
+        // Get current target for display
+        auto currentTarget = nav.getCurrentTarget();
+        string targetStr = "";
+        if (currentTarget.has_value()) {
+            targetStr = " target=(" + to_string(currentTarget->x) + "," + to_string(currentTarget->y) + ")";
+        }
+
+        // Update world objects first
         world.updateTick();
 
-        // collect sensor data
+        // Collect sensor data
         auto raw = car.collectSensorData(world, rng);
-        // fuse and feed to navigation
+        // Fuse and feed to navigation
         auto fused = car.syncNavigationSystem(nav, raw);
         nav.receiveFusedReadings(fused);
 
-        // make decision
-        auto decision = nav.makeDecision(car.getPosition());
+        // Make decision using FRESH fused data (not stale data from last tick)
+        auto decision = nav.makeDecisionWithFused(car.getPosition(), fused);
         Direction moveDir = decision.first;
         string action = decision.second;
 
-        // execute
+        // Determine actual direction for display (use prevDir if no move)
+        Direction displayDir = moveDir;
+        if (displayDir.x == 0 && displayDir.y == 0) {
+            displayDir = prevDir;
+        }
+        
+        // Print direction string
+        string dirStr;
+        if (displayDir.x == 1) dirStr = "EAST";
+        else if (displayDir.x == -1) dirStr = "WEST";
+        else if (displayDir.y == 1) dirStr = "NORTH";
+        else if (displayDir.y == -1) dirStr = "SOUTH";
+        else dirStr = "SOUTH"; // Default
+        
+        // Print "Turning from X to Y" if direction changed
+        string prevDirStr;
+        if (prevDir.x == 1) prevDirStr = "EAST";
+        else if (prevDir.x == -1) prevDirStr = "WEST";
+        else if (prevDir.y == 1) prevDirStr = "NORTH";
+        else if (prevDir.y == -1) prevDirStr = "SOUTH";
+        else prevDirStr = "SOUTH";
+        
+        if (dirStr != prevDirStr && t > 1) {
+            cout << "Turning from " << prevDirStr << " to " << dirStr << "\n";
+        }
+        
+        // Get actual speed from car (after executeMovement has updated it)
+        string speed = car.getSpeed();
+        
+        // Print car state (position BEFORE movement for this tick)
+        cout << "SelfDrivingCar at (" << car.getPosition().x << "," << car.getPosition().y << ")" << targetStr;
+        if (t >= 2) {
+            cout << " speed=" << speed << " direction=" << dirStr;
+        }
+        cout << "\n";
+        
+        // Update direction for next iteration
+        if (moveDir.x != 0 || moveDir.y != 0) {
+            prevDir = moveDir;
+        }
+        
+        // Print tick number
+        if (t == 1) {
+            cout << "  Tick: " << t << "\n";
+        } else {
+            cout << "Tick: " << t << "\n";
+        }
+
+        // Execute movement (updates position for next tick)
         outOfBounds = car.executeMovement(moveDir, action, world);
 
-        // Advance world a second time so moving objects and lights step after car if desired
+        // Stop simulation if all targets have been reached
+        if (!nav.getCurrentTarget().has_value()) {
+            cout << "\n*** All targets reached! Stopping simulation. ***" << endl;
+            return 0;
+        }
+
+        // Print 10x10 world around the car
+        cout << "\nWorld around car (10x10):\n";
+        world.printAround(car.getPosition(), 5, '@');
+        cout << "\n";
+
+        // Advance world a second time so moving objects and lights step after car
         world.updateTick();
+
+        cout << "\n=== Final World State ===" << endl;
+        world.printFull('@', &car.getPosition());
     }
 
     if (outOfBounds) cout << "Self-driving car attempted to leave the world. Simulation ended.\n";
 
-    cout << "Final world (full):\n";
-    world.printFull('@', &car.getPosition());
+    
 
     return 0;
 }

@@ -1,4 +1,4 @@
-//DONE
+//DONE SD
 
 #ifndef SENSOR_READING_H
 #define SENSOR_READING_H
