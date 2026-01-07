@@ -137,6 +137,9 @@ class SensorFusionEngine
                 // Συγχώνευση πολλαπλών μετρήσεων
                 SensorReading fusedReading;
                 fusedReading.objectId = objectId;
+                // Initialize direction to avoid uninitialized values
+                fusedReading.direction.x = 0.0f;
+                fusedReading.direction.y = 0.0f;
                 
                 // Συλλογή τιμών και βεβαιότητας
                 vector<Position> positions;

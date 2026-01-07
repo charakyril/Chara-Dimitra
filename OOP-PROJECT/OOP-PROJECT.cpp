@@ -467,9 +467,9 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        // Print 10x10 world around the car
-        cout << "\nWorld around car (10x10):\n";
-        world.printAround(car.getPosition(), 5, '@');
+        // Print 7x7 world around the car
+        cout << "\nWorld around car (7x7):\n";
+        world.printAround(car.getPosition(), 3, '@');
         cout << "\n";
 
         // Advance world a second time so moving objects and lights step after car
