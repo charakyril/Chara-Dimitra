@@ -296,6 +296,16 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Validate GPS targets are within world bounds
+    for (const auto& target : gpsTargets) {
+        if (target.x < 0 || target.x >= static_cast<int>(dimX) ||
+            target.y < 0 || target.y >= static_cast<int>(dimY)) {
+            cerr << "Error: GPS target (" << target.x << "," << target.y << ") is out of bounds (world is " << dimX << "x" << dimY << ")\n";
+            printHelp();
+            return 1;
+        }
+    }
+
     // Seed RNG (example)
     mt19937_64 rng(seed);
 
@@ -382,7 +392,7 @@ int main(int argc, char* argv[]) {
     
     // Simulation loop
     bool outOfBounds = false;
-    Direction prevDir = Direction{0, 1}; // Default initial direction (facing NORTH)
+    Direction prevDir = Direction{0, 1}; // default NORTH
     for (unsigned int t = 1; t <= simulationTicks && !outOfBounds; ++t) {
         // Check arrival BEFORE decision making so new target is used for next decision
         nav.checkArrivalBeforeTick(car.getPosition());
