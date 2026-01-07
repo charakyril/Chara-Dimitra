@@ -482,8 +482,6 @@ int main(int argc, char* argv[]) {
         world.printAround(car.getPosition(), 3, '@');
         cout << "\n";
 
-        // Advance world a second time so moving objects and lights step after car
-        world.updateTick();
 
         
     }
