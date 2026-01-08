@@ -52,9 +52,11 @@ class World
             pendingDeletion.push_back(obj);
         }
 
+        //Getter functions for grid world dimentions
         unsigned int getDimX() const { return dimX; }
         unsigned int getDimY() const { return dimY; }
 
+        //Function to add objects in grid world
         void addObject(WorldObject* obj) { objects.push_back(obj); }
         
         // Advances the simulation by one tick (time step).
@@ -129,8 +131,10 @@ class World
             {
                 for (int x = minx; x <= maxx; ++x) 
                 {
+                    //Print "." for empty cells 
                     if (pos.x == x && pos.y == y) { cout << carGlyph; continue; }
                     char out = '.';
+                    //For objects, print each object's glyph
                     for (auto p : objects) 
                     {
                         if (p->getPosition().x == x && p->getPosition().y == y) { out = p->getGlyph(); break; }
