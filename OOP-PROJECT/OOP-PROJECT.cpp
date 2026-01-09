@@ -259,7 +259,7 @@ int main(int argc, char* argv[])
         cout << "  --gps <x1> <y1> [x2 y2 ...] " << "GPS target coordinates (required)" << endl;
         cout << "  --help                  " << "Show this help message" << endl << endl;
         cout << "Example usage:" << endl;
-        cout << "  ./oopproj_2025 --seed 12 --dimY 50 --gps 10 20 32 15" << endl;
+        cout << "  ./oop --seed 12 --simulationTicks 20 --gps 10 20" << endl;
     };
 
     //Pass arguments
