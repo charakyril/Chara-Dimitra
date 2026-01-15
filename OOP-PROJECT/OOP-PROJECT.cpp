@@ -49,7 +49,7 @@ class SelfDrivingCar
             else if (dir.y == 1) dirStr = "NORTH";
             else dirStr = "SOUTH";
             
-            cout << "Initialized at ("<< position.x <<")" << "," << "("<< position.y <<")" 
+            cout << "Initialized at ("<< position.x <<","<< position.y <<")" 
             << " facing " << dirStr << " - No driver's license required!" << endl;
             // initialize camera's notion of the car position
             cam_sensor.position = position;
